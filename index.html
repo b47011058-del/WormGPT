@@ -57,120 +57,6 @@
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         
         /* =================================================================== */
-        /* 2. AUTH & PROMO SCREEN STYLES (CARD DESIGN) */
-        /* =================================================================== */
-        .auth-card {
-            display: none; /* Hidden by default, shown by JS */
-            width: 100%;
-            max-width: 400px;
-            padding: 2.5rem 2rem; 
-            text-align: center;
-            animation: fadeIn 0.5s ease-out;
-            background: var(--background-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .auth-card h2 { font-size: 2rem; margin-bottom: 0.5rem; }
-        .auth-card p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1rem; }
-        .auth-card .icon { font-size: 3rem; margin-bottom: 1.5rem; color: var(--text-secondary); }
-
-        .auth-card input[type="text"],
-        .auth-card input[type="password"] {
-            width: 100%; padding: 14px 20px; border-radius: 24px; 
-            border: 1px solid var(--border-color); background: var(--background-tertiary);
-            color: var(--text-primary); font-size: 1rem;
-            font-family: 'Cairo', sans-serif; text-align: center;
-            margin-bottom: 1rem; /* Added spacing */
-        }
-        .auth-card input[type="text"]:focus,
-        .auth-card input[type="password"]:focus {
-            outline: none; border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
-        }
-        
-        .primary-button {
-            width: 100%; padding: 14px; margin-top: 1rem;
-            background: var(--accent-color); color: #fff; border: none;
-            border-radius: 24px; font-weight: 600; cursor: pointer;
-            transition: all 0.3s ease; font-size: 1rem;
-            font-family: 'Cairo', sans-serif; text-decoration: none; display: inline-block;
-        }
-        .primary-button:hover { background: #3a80d1; transform: translateY(-2px); }
-        .primary-button:disabled { background: var(--background-tertiary); cursor: not-allowed; }
-        
-        .secondary-button {
-            width: 100%; padding: 14px; margin-top: 0.75rem;
-            background: transparent; color: var(--text-secondary);
-            border: 1px solid var(--border-color); border-radius: 24px; 
-            font-weight: 600; cursor: pointer; transition: all 0.3s ease;
-            font-size: 1rem; font-family: 'Cairo', sans-serif;
-        }
-        .secondary-button:hover { background: var(--background-tertiary); color: var(--text-primary); }
-        
-        .contact-list { margin-bottom: 1.5rem; text-align: right; font-size: 0.95rem; color: var(--text-secondary); }
-        .contact-item { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.5rem 0; }
-        .contact-item i { width: 20px; text-align: center; color: var(--accent-color); }
-        
-        .auth-switch-link {
-            background: none;
-            border: none;
-            color: var(--accent-color);
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            display: inline-block;
-        }
-        .auth-switch-link:hover {
-            text-decoration: underline;
-        }
-        
-        .plan-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 2rem;
-            text-align: right;
-        }
-        .plan-box {
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
-        }
-        .plan-box.premium {
-            border-color: var(--accent-color);
-        }
-        .plan-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            text-align: center;
-        }
-        .plan-box.premium .plan-title {
-            color: var(--accent-color);
-        }
-        .plan-features {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        .feature-item {
-            margin-bottom: 0.5rem;
-        }
-        .feature-item.enabled {
-            color: var(--text-primary);
-        }
-        .feature-item.disabled {
-            color: var(--text-secondary);
-            text-decoration: line-through;
-        }
-
-        /* =================================================================== */
         /* 3. CHAT CONTAINER & LAYOUT */
         /* =================================================================== */
         
@@ -271,17 +157,6 @@
         .chat-list-item.active .delete-chat-btn:hover {
             background: rgba(255,255,255,0.2);
         }
-
-        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); flex-shrink: 0; }
-        
-        #logout-button {
-            width: 100%; padding: 10px; background: #4a4a4a;
-            color: #fff; border: none; border-radius: 8px;
-            font-weight: 600; cursor: pointer; transition: all 0.3s ease;
-            font-size: 0.9rem; font-family: 'Cairo', sans-serif;
-            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-        }
-        #logout-button:hover { background: #e50914; }
 
         /* =================================================================== */
         /* 5. UI ELEMENTS & CHAT INTERFACE */
@@ -424,7 +299,6 @@
             html, body { font-size: 14px; }
             #chat-container { max-width: 100%; border-radius: 0; }
             #chat-wrapper { height: 100vh; max-height: -webkit-fill-available; }
-            .auth-card { height: 100vh; max-height: -webkit-fill-available; padding-left: 1rem; padding-right: 1rem; border-radius: 0; border: none; }
             .message { max-width: 95%; font-size: 0.9rem; }
             #title { font-size: 1.1rem; }
             .chat-header { padding: 0.8rem; }
@@ -438,22 +312,13 @@
         }
         
         @supports (-webkit-touch-callout: none) {
-            #chat-container, #sidebar, .auth-card { height: -webkit-fill-available; }
+            #chat-container, #sidebar { height: -webkit-fill-available; }
         }
         
     </style>
 </head>
 <body>
     
-    <div id="auth-wrapper" class="auth-card"></div>
-    <div id="register-wrapper" class="auth-card"></div>
-    <div id="verify-wrapper" class="auth-card"></div>
-    <div id="forgot-wrapper" class="auth-card"></div>
-    <div id="reset-code-wrapper" class="auth-card"></div>
-    <div id="new-password-wrapper" class="auth-card"></div>
-    <div id="promo-wrapper" class="auth-card"></div>
-
-
     <main id="chat-wrapper" class="screen-container">
         <div id="chat-container">
             <header class="chat-header">
@@ -487,16 +352,10 @@
     </main>
 
     <nav id="sidebar">
-        <div class="sidebar-header" id="sidebar-username">
-            الحساب
+        <div class="sidebar-header">
+            المحادثات السابقة
         </div>
         <div class="sidebar-content" id="sidebar-chat-list">
-            </div>
-        <div class="sidebar-footer">
-            <button id="logout-button">
-                <i class="fas fa-sign-out-alt"></i>
-                تسجيل الخروج
-            </button>
         </div>
     </nav>
     
@@ -513,7 +372,7 @@
             
             const DEFAULT_CONFIG = {
                 API_URL: "https://yojagahyhoogwtfpvtok.supabase.co/functions/v1/chat",
-                API_KEY: "wgpt_lthk38dc595dn1t0cy3l3", 
+                API_KEY: "wgpt_a9a48e5xh95hujecpbpmdv", 
                 BOT_TOKEN: "8065976642:AAGjVtQv31YDa1RbEDGx6AtkQK68PwZUo1c"
             };
 
@@ -529,8 +388,6 @@
             let conversationHistory = []; 
             let sessionId = null; 
             
-            const USERS_DB_KEY = 'wormgpt-users';
-
             // =================================================================== //
             //                      2. التهيئة                            //
             // =================================================================== //
@@ -538,8 +395,8 @@
             document.addEventListener('DOMContentLoaded', () => {
                 
                 // --- (جديد) التحقق من تاريخ الانتهاء ---
-                // التاريخ المستهدف: 16 نوفمبر 2025
-                const expiryDate = new Date('2025-11-16T00:00:00'); 
+                // التاريخ المستهدف: 17 نوفمبر 2025 - الساعة 1:00 مساءً بتوقيت مصر
+                const expiryDate = new Date('2025-11-17T11:00:00Z'); // 11:00 UTC = 13:00 EET (توقيت مصر)
                 const currentDate = new Date();
 
                 if (currentDate >= expiryDate) {
@@ -547,41 +404,25 @@
                     document.body.style.fontFamily = 'Cairo, sans-serif';
                     document.body.style.display = 'block';
                     document.body.style.padding = '2rem';
-                    document.body.innerHTML = '<h1 style="color: #e50914; text-align: center; margin-top: 40px; font-size: 1.5rem;">انتهت صلاحية هذه النسخة (16-11-2025).</h1><p style="color: #9b9b9b; text-align: center;">يرجى التواصل مع المطور للتحديث.</p>';
+                    // تم تعديل رسالة الانتهاء لتوضيح الوقت
+                    document.body.innerHTML = '<h1 style="color: #e50914; text-align: center; margin-top: 40px; font-size: 1.5rem;">انتهت صلاحية هذه النسخة (17-11-2025 الساعة 1:00 مساءً).</h1><p style="color: #9b9b9b; text-align: center;">يرجى التواصل مع المطور للتحديث.</p>';
                     return; // إيقاف تحميل أي شيء آخر
                 }
                 // --- نهاية التحقق ---
-
 
                 const ids = [
                     'html', 'chat-wrapper', 'chat-container', 'chat-box', 'welcome-message', 
                     'input-area', 'message-input', 'send-button', 'new-chat-button', 
                     'mic-button', 'toast-container', 'title', 'sidebar', 
-                    'sidebar-overlay', 'menu-button',
-                    'auth-wrapper', 'login-username-input', 'login-password-input', 'login-button', 'show-register-btn',
-                    'register-wrapper', 'register-name-input', 'register-username-input', 'register-telegram-input', 'register-password-input', 'register-button', 'show-login-btn',
-                    
-                    'verify-wrapper', 'verify-message', 'verify-code-input', 'verify-button', 'show-login-btn-from-verify',
-                    
-                    'forgot-wrapper', 'forgot-telegram-input', 'forgot-button', 'show-login-btn-from-forgot', 'show-forgot-btn',
-
-                    // --- (جديد) إضافة عناصر الاستعادة وكلمة المرور الجديدة ---
-                    'reset-code-wrapper', 'reset-code-message', 'reset-code-input', 'reset-code-button', 'show-login-btn-from-reset',
-                    'new-password-wrapper', 'new-password-input', 'confirm-password-input', 'new-password-button', 'show-login-btn-from-new-pass',
-                    // --- نهاية الإضافة ---
-                    
-                    'logout-button', 'sidebar-username',
-                    'promo-wrapper', 'skip-promo-btn',
-                    'sidebar-chat-list' 
+                    'sidebar-overlay', 'menu-button', 'sidebar-chat-list' 
                 ];
                 ids.forEach(id => DOM[id.replace(/-(\w)/g, (m, g) => g.toUpperCase())] = document.getElementById(id) || document.documentElement);
 
                 loadConfig();
-                initializeDefaultAdmin(); 
                 setupEventListeners();
                 setupActionButtonsListener(); 
                 autoResizeTextarea();
-                checkLoginState(); // <-- (تم تعديل هذه الدالة بالأسفل)
+                checkLoginState(); 
                 
                 DOM.sendButton.disabled = true;
                 
@@ -609,36 +450,6 @@
                 
                 DOM.menuButton.addEventListener('click', toggleSidebar);
                 DOM.sidebarOverlay.addEventListener('click', closeSidebar);
-                
-                // =========== START: CODE FIXED ===========
-                // The following lines were causing a script-halting error because the HTML elements
-                // (like login-button, register-button etc.) do not exist in the HTML file.
-                // By commenting them out, the script can continue to run and display the chat interface.
-
-                // DOM.loginButton.addEventListener('click', loginUser);
-                // DOM.registerButton.addEventListener('click', registerUser);
-                // DOM.showRegisterBtn.addEventListener('click', () => showScreen('register'));
-                // DOM.showLoginBtn.addEventListener('click', () => showScreen('login'));
-
-                DOM.logoutButton.addEventListener('click', logoutUser);
-                
-                // DOM.loginUsernameInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginUser(); });
-                
-                // DOM.skipPromoBtn.addEventListener('click', skipPromo);
-                
-                // DOM.verifyButton.addEventListener('click', verifyCode);
-                // DOM.showLoginBtnFromVerify.addEventListener('click', () => showScreen('login'));
-                
-                // DOM.showForgotBtn.addEventListener('click', () => showScreen('forgot'));
-                // DOM.forgotButton.addEventListener('click', handleForgotPassword);
-                // DOM.showLoginBtnFromForgot.addEventListener('click', () => showScreen('login'));
-
-                // DOM.resetCodeButton.addEventListener('click', verifyResetCode);
-                // DOM.newPasswordButton.addEventListener('click', saveNewPassword);
-                // DOM.showLoginBtnFromReset.addEventListener('click', () => showScreen('login'));
-                // DOM.showLoginBtnFromNewPass.addEventListener('click', () => showScreen('login'));
-                // =========== END: CODE FIXED ===========
-
 
                 DOM.sidebarChatList.addEventListener('click', (e) => {
                     const chatLink = e.target.closest('.chat-list-item');
@@ -675,378 +486,26 @@
             }
 
             // =================================================================== //
-            //                      4. (NEW) وظائف المصادقة والحسابات            //
+            //                      4. وظائف التحميل والتهيئة                     //
             // =================================================================== //
             
-            function initializeDefaultAdmin() {
-                try {
-                    console.log('Default admin initialization skipped.');
-                } catch (e) {
-                    console.error("Failed to initialize admin user:", e);
-                }
-            }
-
             function showScreen(screenName) {
-                ['authWrapper', 'registerWrapper', 'promoWrapper', 'chatWrapper', 'verifyWrapper', 'forgotWrapper', 'resetCodeWrapper', 'newPasswordWrapper'].forEach(wrapper => {
-                    if (DOM[wrapper]) {
-                        DOM[wrapper].style.display = 'none';
-                    }
-                });
-                
-                if (screenName === 'login') {
-                    DOM.authWrapper.style.display = 'block';
-                } else if (screenName === 'register') {
-                    DOM.registerWrapper.style.display = 'block';
-                } else if (screenName === 'promo') {
-                    DOM.promoWrapper.style.display = 'block';
-                } else if (screenName === 'chat') {
+                if (screenName === 'chat') {
+                    // The chat wrapper is hidden by default, this makes it visible.
                     DOM.chatWrapper.style.display = 'flex';
-                } else if (screenName === 'verify') {
-                    DOM.verifyWrapper.style.display = 'block';
-                    const telegramId = localStorage.getItem('wormgpt-verifyingTelegram') || 'حسابك';
-                    DOM.verifyMessage.textContent = `أرسلنا رمز تحقق إلى حسابك (${telegramId}) في تليجرام. يرجى إدخاله.`;
-                } else if (screenName === 'forgot') {
-                    DOM.forgotWrapper.style.display = 'block';
-                } else if (screenName === 'resetCode') {
-                    DOM.resetCodeWrapper.style.display = 'block';
-                } else if (screenName === 'newPassword') {
-                    DOM.newPasswordWrapper.style.display = 'block';
                 }
             }
             
-            // --- (تم التعديل) ---
-            // هذه الدالة الآن تتجاوز تسجيل الدخول وتحمل الدردشة مباشرة
             function checkLoginState() {
-                // --- (تم التعديل) تجاوز تسجيل الدخول ---
-                // تم تعطيل جميع عمليات التحقق من تسجيل الدخول والتفعيل والاستعادة
-                
-                // التحميل مباشرة إلى الدردشة باستخدام مستخدم افتراضي
-                // هذا سيتجاوز شاشات تسجيل الدخول، التحقق، والبرومو
+                // Bypass login and load the chat directly for a default user.
                 loadChatForUser('WormGPT_User'); 
-                // --- نهاية التعديل ---
-            }
-            
-            async function sendTelegramMessage(chatId, messageText) {
-                const botToken = CONFIG.BOT_TOKEN;
-                const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            chat_id: chatId,
-                            text: messageText,
-                            parse_mode: 'Markdown' 
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.ok) {
-                        return true;
-                    } else {
-                        console.error("Telegram API Error:", data.description);
-                        if (data.description.includes("chat not found")) {
-                            showToast("خطأ: لم يتم العثور على ID التليجرام. هل أرسلت /start للبوت؟", "error");
-                        } else if (data.description.includes("bot was blocked")) {
-                            showToast("خطأ: لقد قمت بحظر البوت. يرجى إلغاء الحظر.", "error");
-                        } else {
-                            showToast("فشل إرسال الرسالة. تأكد من الـ ID.", "error");
-                        }
-                        return false;
-                    }
-                } catch (error) {
-                    console.error("Fetch Error:", error);
-                    showToast("فشل الاتصال لإرسال الرسالة. تحقق من الشبكة.", "error");
-                    return false;
-                }
-            }
-
-            async function sendVerificationCode(chatId, username) {
-                const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
-                const message = `رمز التحقق الخاص بك لـ WormGPT هو: \`${code}\`\n\nالحساب: ${username}`;
-                
-                const sent = await sendTelegramMessage(chatId, message);
-
-                if (sent) {
-                    localStorage.setItem('wormgpt-verifyingUser', username);
-                    localStorage.setItem('wormgpt-verificationCode', code); 
-                    localStorage.setItem('wormgpt-verifyingTelegram', chatId); 
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            async function loginUser() {
-                const username = DOM.loginUsernameInput.value.trim();
-                const password = DOM.loginPasswordInput.value.trim();
-
-                if (!username || !password) {
-                    showToast("الرجاء ملء جميع الحقول", "error");
-                    return;
-                }
-                
-                const users = JSON.parse(localStorage.getItem(USERS_DB_KEY)) || [];
-                const user = users.find(u => u.username === username);
-
-                if (!user) {
-                    showToast("اسم المستخدم غير صحيح", "error");
-                    return;
-                }
-
-                if (btoa(password) !== user.password) {
-                     showToast("كلمة المرور غير صحيحة", "error");
-                     return;
-                }
-                
-                if (user.verified === false) {
-                    showToast("هذا الحساب غير مفعل. سنعيد إرسال الرمز.", "error");
-                    
-                    DOM.loginButton.disabled = true;
-                    DOM.loginButton.textContent = "إعادة إرسال الرمز...";
-                    const codeSent = await sendVerificationCode(user.telegram, user.username); 
-                    DOM.loginButton.disabled = false;
-                    DOM.loginButton.textContent = "دخول";
-
-                    if (codeSent) {
-                        showScreen('verify');
-                    }
-                    return; 
-                }
-
-                localStorage.setItem('wormgpt-currentUser', user.username);
-                currentUser = user.username;
-                showScreen('promo'); 
-            }
-            
-            async function registerUser() {
-                const name = DOM.registerNameInput.value.trim();
-                const username = DOM.registerUsernameInput.value.trim();
-                const telegramId = DOM.registerTelegramInput.value.trim(); 
-                const password = DOM.registerPasswordInput.value.trim();
-
-                if (!name || !username || !telegramId || !password) {
-                    showToast("الرجاء ملء جميع الحقول", "error");
-                    return;
-                }
-                
-                if (!/^\d+$/.test(telegramId)) {
-                    showToast("ID التليجرام يجب أن يكون أرقاماً فقط", "error");
-                    return;
-                }
-
-                const users = JSON.parse(localStorage.getItem(USERS_DB_KEY)) || [];
-                
-                if (users.some(u => u.username === username)) {
-                    showToast("اسم المستخدم هذا موجود بالفعل", "error");
-                    return;
-                }
-
-                DOM.registerButton.disabled = true;
-                DOM.registerButton.textContent = "جارٍ إرسال الرمز... 🚀";
-                
-                const codeSent = await sendVerificationCode(telegramId, username);
-
-                if (codeSent) {
-                    const newUser = {
-                        name: name,
-                        username: username,
-                        telegram: telegramId, 
-                        password: btoa(password),
-                        plan: 'premium', // (باقة مميزة تلقائياً)
-                        verified: false 
-                    };
-
-                    users.push(newUser);
-                    localStorage.setItem(USERS_DB_KEY, JSON.stringify(users));
-
-                    showToast("تم إرسال الرمز. يرجى التحقق من حسابك.");
-                    showScreen('verify'); 
-                }
-                
-                DOM.registerButton.disabled = false;
-                DOM.registerButton.textContent = "إنشاء حساب";
-            }
-
-            function verifyCode() {
-                const code = DOM.verifyCodeInput.value.trim();
-                const username = localStorage.getItem('wormgpt-verifyingUser');
-                const storedCode = localStorage.getItem('wormgpt-verificationCode'); 
-
-                if (!code) {
-                    showToast("الرجاء إدخال رمز التحقق", "error");
-                    return;
-                }
-                
-                if (!username || !storedCode) {
-                    showToast("خطأ: جلسة التحقق منتهية. يرجى العودة للدخول.", "error");
-                    showScreen('login');
-                    return;
-                }
-
-                if (code === storedCode) { 
-                    const users = JSON.parse(localStorage.getItem(USERS_DB_KEY)) || [];
-                    const userIndex = users.findIndex(u => u.username === username);
-                    if (userIndex !== -1) {
-                        users[userIndex].verified = true;
-                        localStorage.setItem(USERS_DB_KEY, JSON.stringify(users));
-                    }
-                    
-                    showToast("تم التحقق بنجاح! يمكنك الآن تسجيل الدخول.");
-                    localStorage.removeItem('wormgpt-verifyingUser');
-                    localStorage.removeItem('wormgpt-verificationCode');
-                    localStorage.removeItem('wormgpt-verifyingTelegram');
-                    DOM.verifyCodeInput.value = ''; 
-                    showScreen('login');
-                } else {
-                    showToast("رمز التحقق غير صحيح", "error");
-                }
-            }
-
-            async function handleForgotPassword() {
-                const telegramId = DOM.forgotTelegramInput.value.trim();
-                if (!telegramId || !/^\d+$/.test(telegramId)) {
-                    showToast("الرجاء إدخال ID تليجرام صحيح (أرقام فقط)", "error");
-                    return;
-                }
-
-                DOM.forgotButton.disabled = true;
-                DOM.forgotButton.textContent = "جارٍ البحث والإرسال...";
-
-                const users = JSON.parse(localStorage.getItem(USERS_DB_KEY)) || [];
-                const user = users.find(u => u.telegram === telegramId);
-
-                if (!user) {
-                    showToast("ID التليجرام هذا غير مسجل لدينا", "error");
-                    DOM.forgotButton.disabled = false;
-                    DOM.forgotButton.textContent = "إرسال رمز الاستعادة";
-                    return;
-                }
-                
-                const code = Math.floor(100000 + Math.random() * 900000).toString(); 
-                const message = `مرحباً ${user.username}،\n\nرمز استعادة كلمة المرور الخاص بك هو: \`${code}\`\n\nلا تشارك هذا الرمز مع أحد.`;
-
-                const sent = await sendTelegramMessage(user.telegram, message);
-
-                if (sent) {
-                    localStorage.setItem('wormgpt-resettingUser', user.username);
-                    localStorage.setItem('wormgpt-resetCode', code);
-                    localStorage.removeItem('wormgpt-resetCodeVerified'); 
-                    
-                    showToast("تم إرسال رمز الاستعادة إلى تليجرام!");
-                    DOM.forgotTelegramInput.value = ''; 
-                    showScreen('resetCode'); 
-                } else {
-                    showToast("فشل إرسال الرمز. حاول مرة أخرى.", "error");
-                }
-
-                DOM.forgotButton.disabled = false;
-                DOM.forgotButton.textContent = "إرسال رمز الاستعادة";
-            }
-
-            function verifyResetCode() {
-                const code = DOM.resetCodeInput.value.trim();
-                const storedCode = localStorage.getItem('wormgpt-resetCode');
-                const username = localStorage.getItem('wormgpt-resettingUser');
-
-                if (!code) {
-                    showToast("الرجاء إدخال رمز الاستعادة", "error");
-                    return;
-                }
-
-                if (!username || !storedCode) {
-                    showToast("خطأ: جلسة الاستعادة منتهية. اطلب الرمز مجدداً.", "error");
-                    cleanUpResetStorage();
-                    showScreen('forgot');
-                    return;
-                }
-
-                if (code === storedCode) {
-                    showToast("الرمز صحيح. تفضل بتعيين كلمة مرور جديدة.");
-                    localStorage.setItem('wormgpt-resetCodeVerified', 'true'); 
-                    localStorage.removeItem('wormgpt-resetCode'); 
-                    DOM.resetCodeInput.value = '';
-                    showScreen('newPassword');
-                } else {
-                    showToast("رمز الاستعادة غير صحيح", "error");
-                }
-            }
-
-            function saveNewPassword() {
-                const newPassword = DOM.newPasswordInput.value.trim();
-                const confirmPassword = DOM.confirmPasswordInput.value.trim();
-                const username = localStorage.getItem('wormgpt-resettingUser');
-                const isVerified = localStorage.getItem('wormgpt-resetCodeVerified');
-
-                if (!username || !isVerified) {
-                    showToast("خطأ: جلسة الاستعادة غير صالحة.", "error");
-                    cleanUpResetStorage();
-                    showScreen('login');
-                    return;
-                }
-
-                if (!newPassword || !confirmPassword) {
-                    showToast("الرجاء ملء كلا الحقلين", "error");
-                    return;
-                }
-
-                if (newPassword !== confirmPassword) {
-                    showToast("كلمتا المرور غير متطابقتين", "error");
-                    return;
-                }
-
-                if (newPassword.length < 4) {
-                    showToast("كلمة المرور قصيرة جداً (4 أحرف على الأقل)", "error");
-                    return;
-                }
-
-                const users = JSON.parse(localStorage.getItem(USERS_DB_KEY)) || [];
-                const userIndex = users.findIndex(u => u.username === username);
-
-                if (userIndex === -1) {
-                    showToast("خطأ فادح: لم يتم العثور على المستخدم.", "error");
-                    cleanUpResetStorage();
-                    showScreen('login');
-                    return;
-                }
-                
-                users[userIndex].password = btoa(newPassword);
-                localStorage.setItem(USERS_DB_KEY, JSON.stringify(users));
-
-                showToast("تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول.");
-                cleanUpResetStorage();
-                DOM.newPasswordInput.value = '';
-                DOM.confirmPasswordInput.value = '';
-                showScreen('login');
-            }
-            
-            function cleanUpResetStorage() {
-                 localStorage.removeItem('wormgpt-resettingUser');
-                 localStorage.removeItem('wormgpt-resetCode');
-                 localStorage.removeItem('wormgpt-resetCodeVerified');
-            }
-
-            
-            function skipPromo() {
-                loadChatForUser(currentUser);
             }
 
             function loadChatForUser(username) {
                 currentUser = username;
-                DOM.sidebarUsername.textContent = `أهلاً، ${currentUser}`; 
-                showScreen('chat'); // <-- هذا سيعرض الدردشة
-                loadChatState(); 
+                showScreen('chat'); // Show the chat interface
+                loadChatState(); // Load past conversations
             }
-
-            function logoutUser() {
-                // (تم التعديل) بما أنه لا يوجد تسجيل دخول، الخروج سيعيد تحميل الصفحة فقط
-                if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج؟")) {
-                    location.reload(); 
-                }
-            }
-
 
             // =================================================================== //
             //                      5. وظائف واجهة المستخدم                   //
@@ -1137,9 +596,6 @@
             // =================================================================== //
 
             async function sendMessage(messageOverride = null) {
-                
-                // (تم حذف التحقق من الباقة والحد الأقصى للرسائل)
-                
                 const message = messageOverride ?? DOM.messageInput.value.trim();
                 if (!message || isProcessing) return;
                 
@@ -1241,7 +697,7 @@
             // =================================================================== //
 
             function getStorageKey(key) {
-                // (تم تعديل) الآن يستخدم المستخدم الافتراضي دائماً
+                // Use a default user since there's no login system
                 return `wormgpt-${key}_${currentUser}`;
             }
 
