@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Auto Views Bot 🚀</title>
+    <title>Turbo TikTok Bot 🚀</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -23,18 +23,327 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             background-color: var(--card-color);
             border-radius: 12px;
             border: 1px solid var(--border-color);
-            padding: 25px;
+            padding: 0;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); background: #21262d; }
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: var(--text-color); cursor: pointer; font-size: 1rem; font-weight: bold; transition: 0.3s; border-bottom: 3px solid transparent; }
+        .tab-btn:hover { background-color: rgba(255,255,255,0.05); }
+        .tab-btn.active { border-bottom-color: var(--accent-color); color: var(--accent-color); background-color: rgba(88, 166, 255, 0.1); }
+
+        .content-section { padding: 25px; display: none; }
+        .content-section.active { display: block; }
+
+        h1 { text-align: center; color: var(--accent-color); margin-bottom: 20px; font-size: 1.5rem; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background-color: #0d1117; color: white; box-sizing: border-box; outline: none; }
+        input:focus, textarea:focus { border-color: var(--accent-color); }
+
+        .buttons { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-primary { background-color: var(--success-color); color: white; }
+        .btn-danger { background-color: var(--error-color); color: white; opacity: 0.5; cursor: not-allowed; }
+        .btn-action { background-color: var(--accent-color); color: white; }
+        .btn-secondary { background-color: var(--border-color); color: white; }
+
+        .console-output {
+            background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace;
+            padding: 15px; border-radius: 6px; height: 300px; overflow-y: auto; margin-top: 20px;
+            border: 1px solid var(--border-color); font-size: 0.9rem; white-space: pre-wrap; direction: ltr; text-align: left;
+        }
+
+        .stats-bar { display: flex; justify-content: space-between; background: #21262d; padding: 10px; border-radius: 6px; margin-top: 20px; font-size: 0.9rem; }
+        #proxyList { height: 200px; resize: vertical; font-family: monospace; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tiktok')">⚡ TikTok Turbo</button>
+        <button class="tab-btn" onclick="switchTab('proxy')">🌐 Proxy Scraper</button>
+    </div>
+
+    <!-- TIKTOK SECTION -->
+    <div id="tiktok" class="content-section active">
+        <h1>🚀 TikTok Auto Views (Turbo)</h1>
+        
+        <div class="form-group">
+            <label>🔑 API Key (Foloiq)</label>
+            <input type="password" id="apiKey" value="115b1e6a6ff0802f69dca316d15e802c">
+        </div>
+
+        <div class="form-group">
+            <label>🔗 رابط الفيديو (TikTok Link)</label>
+            <input type="url" id="tiktokLink" placeholder="https://www.tiktok.com/@user/video/...">
+        </div>
+
+        <div class="form-group">
+            <label>🔢 الكمية</label>
+            <input type="number" id="quantity" value="100" max="100" min="1">
+        </div>
+
+        <div class="stats-bar">
+            <span>📦 Orders: <strong id="orderCount">0</strong></span>
+            <span>👁️ Views: <strong id="totalViews">0</strong></span>
+        </div>
+
+        <div class="buttons">
+            <button id="startBtn" class="btn-primary" onclick="startBot()">تشغيل فوري 🚀</button>
+            <button id="stopBtn" class="btn-danger" onclick="stopBot()" disabled>إيقاف 🛑</button>
+        </div>
+
+        <div class="console-output" id="tiktokConsole">
+            > System Ready (5s Check Mode)...
+        </div>
+    </div>
+
+    <!-- PROXY SECTION -->
+    <div id="proxy" class="content-section">
+        <h1>🌐 صائد البروكسيات</h1>
+        <div class="stats-bar">
+            <span>🔎 تم العثور: <strong id="foundProxies">0</strong></span>
+            <span>✨ الصالحة: <strong id="uniqueProxies">0</strong></span>
+        </div>
+        <div class="buttons">
+            <button class="btn-action" id="scrapeBtn" onclick="scrapeProxies()">جلب البروكسيات</button>
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <textarea id="proxyOutput" placeholder="البروكسيات..." readonly></textarea>
+        </div>
+        <div class="buttons">
+            <button class="btn-secondary" onclick="copyProxies()">نسخ 📋</button>
+            <button class="btn-secondary" onclick="downloadProxies()">تحميل 💾</button>
+        </div>
+        <div class="console-output" id="proxyConsole" style="height: 150px;">> جاهز...</div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    }
+
+    // --- TIKTOK BOT LOGIC (MODIFIED FOR SPEED) ---
+    let isRunning = false;
+    let orderCount = 0;
+    let totalViews = 0;
+    const SERVICE_ID = 5706;
+    // استخدام بروكسي CORS للوصول لـ Foloiq من المتصفح
+    const PROXY_URL = "https://corsproxy.io/?"; 
+
+    function logTikTok(msg, type = 'info') {
+        const div = document.getElementById('tiktokConsole');
+        const time = new Date().toLocaleTimeString('en-US', {hour12: false, minute:'2-digit', second:'2-digit'});
+        let color = '#0f0';
+        if (type === 'error') color = '#ff4444';
+        if (type === 'process') color = '#58a6ff';
+        if (type === 'success') color = '#00ffaa';
+        div.innerHTML += `<div style="color:${color}">[${time}] ${msg}</div>`;
+        div.scrollTop = div.scrollHeight;
+    }
+
+    async function startBot() {
+        const key = document.getElementById('apiKey').value;
+        const link = document.getElementById('tiktokLink').value;
+        let qty = parseInt(document.getElementById('quantity').value);
+
+        if (!key || !link) { logTikTok("❌ البيانات ناقصة!", "error"); return; }
+        
+        isRunning = true;
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('stopBtn').style.opacity = 1;
+        document.getElementById('stopBtn').style.cursor = 'pointer';
+
+        logTikTok("🚀 تم بدء التشغيل السريع...", "process");
+
+        while (isRunning) {
+            orderCount++;
+            document.getElementById('orderCount').innerText = orderCount;
+            
+            // 1. إنشاء الطلب
+            logTikTok(`📦 طلب #${orderCount}: جاري الإرسال...`, "process");
+            const orderId = await createOrder(key, link, qty);
+            
+            if (!isRunning) break;
+
+            if (orderId) {
+                logTikTok(`✅ تم إنشاء الطلب: ${orderId}`, "info");
+                
+                // 2. تتبع الطلب (بسرعة عالية)
+                logTikTok(`🔍 تتبع الحالة (كل 5 ثواني)...`, "process");
+                const completed = await trackOrder(key, orderId);
+
+                if (completed) {
+                    totalViews += qty;
+                    document.getElementById('totalViews').innerText = totalViews;
+                    logTikTok(`🎉 الطلب اكتمل! بدء التالي فوراً...`, "success");
+                    // لا يوجد انتظار هنا، التكرار التالي فوري
+                } else {
+                    logTikTok("⚠️ الطلب ألغي أو فشل التتبع. تخطي...", "error");
+                }
+            } else {
+                logTikTok("❌ فشل إنشاء الطلب، إعادة المحاولة بعد 10 ثواني...", "error");
+                await new Promise(r => setTimeout(r, 10000));
+            }
+        }
+        stopBot();
+    }
+
+    function stopBot() {
+        isRunning = false;
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        document.getElementById('stopBtn').style.opacity = 0.5;
+        logTikTok("🛑 تم الإيقاف.", "error");
+    }
+
+    async function createOrder(key, link, qty) {
+        const url = `${PROXY_URL}${encodeURIComponent("https://foloiq.com/api/v2")}`;
+        const formData = new URLSearchParams();
+        formData.append('key', key);
+        formData.append('action', 'add');
+        formData.append('service', SERVICE_ID);
+        formData.append('link', link);
+        formData.append('quantity', qty);
+
+        try {
+            const res = await fetch(url, { method: 'POST', body: formData });
+            const json = await res.json();
+            return json.order || null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // دالة التتبع السريعة
+    async function trackOrder(key, orderId) {
+        const url = `${PROXY_URL}${encodeURIComponent("https://foloiq.com/api/v2")}`;
+        const formData = new URLSearchParams();
+        formData.append('key', key);
+        formData.append('action', 'status');
+        formData.append('order', orderId);
+
+        let attempts = 0;
+        // 500 محاولة * 5 ثواني = حوالي 40 دقيقة (كافية جداً)
+        const maxAttempts = 500; 
+
+        while (attempts < maxAttempts && isRunning) {
+            attempts++;
+            try {
+                const response = await fetch(url, { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                if (result.status === 'Completed') {
+                    return true;
+                } else if (result.status === 'Canceled' || result.status === 'Error') {
+                    return false;
+                }
+                
+                // الانتظار 5 ثواني فقط بدلاً من 30
+                await new Promise(r => setTimeout(r, 5000));
+                
+            } catch (e) {
+                // في حالة خطأ الاتصال، ننتظر قليلاً ونكمل
+                await new Promise(r => setTimeout(r, 5000));
+            }
+        }
+        return false;
+    }
+
+
+    // --- PROXY SCRAPER LOGIC ---
+    const proxySources = [
+        "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=1000&country=all&ssl=all&anonymity=all&simplified=true",
+        "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/http.txt",
+        "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
+        "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
+        "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt",
+        "https://raw.githubusercontent.com/mmpx12/proxy-list/master/http.txt",
+        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt"
+    ];
+
+    function logProxy(msg, type = 'info') {
+        const div = document.getElementById('proxyConsole');
+        let color = '#0f0';
+        if (type === 'error') color = '#ff4444';
+        div.innerHTML += `<div style="color:${color}">${msg}</div>`;
+        div.scrollTop = div.scrollHeight;
+    }
+
+    async function scrapeProxies() {
+        const btn = document.getElementById('scrapeBtn');
+        const output = document.getElementById('proxyOutput');
+        btn.disabled = true;
+        btn.innerText = "جاري الجلب...";
+        output.value = "";
+        document.getElementById('proxyConsole').innerHTML = "";
+        
+        let allProxies = new Set();
+        logProxy("🔄 جارٍ الاتصال بالمصادر...", "process");
+
+        const promises = proxySources.map(async (source) => {
+            try {
+                const response = await fetch(PROXY_URL + encodeURIComponent(source));
+                const text = await response.text();
+                const regex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,5})/g;
+                const matches = text.match(regex);
+                if (matches) matches.forEach(p => allProxies.add(p));
+            } catch (e) { logProxy("❌ خطأ مصدر", "error"); }
+        });
+
+        await Promise.all(promises);
+        const uniqueList = Array.from(allProxies);
+        output.value = uniqueList.join('\n');
+        document.getElementById('foundProxies').innerText = uniqueList.length;
+        document.getElementById('uniqueProxies').innerText = uniqueList.length;
+        logProxy(`✨ تم جلب ${uniqueList.length} بروكسي.`, "success");
+        btn.disabled = false;
+        btn.innerText = "جلب البروكسيات";
+    }
+
+    function copyProxies() {
+        const output = document.getElementById('proxyOutput');
+        if (!output.value) return;
+        output.select();
+        document.execCommand('copy');
+        alert("تم النسخ!");
+    }
+
+    function downloadProxies() {
+        const text = document.getElementById('proxyOutput').value;
+        if (!text) return;
+        const blob = new Blob([text], { type: "text/plain" });
+        const anchor = document.createElement("a");
+        anchor.download = "proxies.txt";
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.style.display = "none";
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+    }
+</script>
+
+</body>
+</html>            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         h1 {
