@@ -624,7 +624,7 @@
                         if (user) {
                             await supabase
                                 .from('wormgpt_conversations')
-                                .insert({ user_id: user.id, telegram_id, messages });
+                                .insert({ user_id: user.id, telegram_id: telegramId, messages });
                         }
                     }
                 } catch (error) {
@@ -978,27 +978,36 @@
                     const safeHtml = DOMPurify.sanitize(rawHtml);
                     bubble.innerHTML = safeHtml;
                     
-                    bubble.querySelectorAll('pre code').forEach(block => {
-                        hljs.highlightElement(block);
-                        const wrapper = document.createElement('div'); 
-                        wrapper.className = 'code-wrapper';
-                        const header = document.createElement('div'); 
-                        header.className = 'code-header';
-                        header.innerHTML = `<span>Code</span><button class="copy-code-btn" onclick="app.copy(this)">${i18n.t('copy')}</button>`;
-                        
-                        block.parentElement.replaceWith(wrapper);
-                        wrapper.appendChild(header);
-                        wrapper.appendChild(block.parentElement);
-                    });
+                    // Process code blocks with delay to ensure DOM is ready
+                    setTimeout(() => {
+                        bubble.querySelectorAll('pre code').forEach(block => {
+                            hljs.highlightElement(block);
+                            
+                            // Create wrapper for code block
+                            const wrapper = document.createElement('div'); 
+                            wrapper.className = 'code-wrapper';
+                            
+                            // Create header with copy button
+                            const header = document.createElement('div'); 
+                            header.className = 'code-header';
+                            header.innerHTML = `<span>Code</span><button class="copy-code-btn" onclick="copyCode(this)">${i18n.t('copy')}</button>`;
+                            
+                            // Wrap the code block
+                            const pre = block.parentElement;
+                            pre.parentNode.insertBefore(wrapper, pre);
+                            wrapper.appendChild(header);
+                            wrapper.appendChild(pre);
+                        });
+                    }, 0);
                     
                     // Add message actions for bot messages
                     const actionsDiv = document.createElement('div');
                     actionsDiv.className = 'msg-actions';
                     actionsDiv.innerHTML = `
-                        <button class="msg-action-btn" onclick="app.copyMessage(this)">
+                        <button class="msg-action-btn" onclick="copyMessage(this)">
                             <i class="fas fa-copy"></i> ${i18n.t('copyMessage')}
                         </button>
-                        <button class="msg-action-btn" onclick="app.speakMessage(this)">
+                        <button class="msg-action-btn" onclick="speakMessage(this)">
                             <i class="fas fa-volume-up"></i> ${i18n.t('listen')}
                         </button>
                     `;
@@ -1023,131 +1032,53 @@
                 if(recognizing) return;
                 
                 const rec = new SR();
-                rec.lang = 'ar-SA';
+                rec.lang = i18n.currentLang === 'ar' ? 'ar-SA' : 'en-US';
                 rec.onstart = () => { recognizing = true; dom.mic.classList.add('mic-active'); };
                 rec.onend = () => { recognizing = false; dom.mic.classList.remove('mic-active'); };
-                rec.onresult = e => { dom.input.value += ' ' + e.results[0][0].transcript; dom.input.dispatchEvent(new Event('input')); };
+                rec.onresult = e => { 
+                    if(e.results[0] && e.results[0][0]) {
+                        dom.input.value += ' ' + e.results[0][0].transcript; 
+                        dom.input.dispatchEvent(new Event('input'));
+                    }
+                };
                 rec.start();
             }
 
             function exportChat() {
                 html2canvas(dom.box).then(cvs => {
                     const a = document.createElement('a'); 
-                    a.download = 'WormGPT-Chat.png'; 
+                    a.download = 'WormGPT-Chat-' + Date.now() + '.png'; 
                     a.href = cvs.toDataURL(); 
                     a.click();
                 });
             }
 
-            window.app = { 
-                ...window.app, 
-                copy: (btn) => {
-                    const txt = btn.parentElement.nextElementSibling.innerText;
-                    navigator.clipboard.writeText(txt);
-                    const old = btn.innerText; 
-                    btn.innerText = "تم النسخ";
-                    setTimeout(()=>btn.innerText=old, 2000);
-                },
-                copyMessage: (btn) => {
-                    const msgBubble = btn.closest('.msg-bubble');
-                    const actionsDiv = msgBubble.querySelector('.msg-actions');
-                    const clonedBubble = msgBubble.cloneNode(true);
-                    if (clonedBubble.querySelector('.msg-actions')) {
-                        clonedBubble.querySelector('.msg-actions').remove();
-                    }
-                    const txt = clonedBubble.innerText;
-                    navigator.clipboard.writeText(txt);
-                    const iconElement = btn.querySelector('i');
-                    const oldIcon = iconElement.className;
-                    iconElement.className = 'fas fa-check';
-                    setTimeout(() => iconElement.className = oldIcon, 2000);
-                },
-                speakMessage: async (btn) => {
-                    const msgBubble = btn.closest('.msg-bubble');
-                    
-                    // Stop if already playing
-                    if (btn.classList.contains('playing')) {
-                        if (window.currentAudio) {
-                            window.currentAudio.pause();
-                            window.currentAudio = null;
+            async function loadConversation(telegramId) {
+                try {
+                    const messages = await DB.getConversation(telegramId);
+                    if (messages && messages.length > 0) {
+                        document.getElementById('welcome-screen').style.display = 'none';
+                        conversationMessages = messages;
+                        
+                        // Clear existing messages except welcome screen
+                        const welcomeScreen = document.getElementById('welcome-screen');
+                        dom.box.innerHTML = '';
+                        if (welcomeScreen) {
+                            dom.box.appendChild(welcomeScreen);
+                            welcomeScreen.style.display = 'none';
                         }
-                        btn.classList.remove('playing');
-                        btn.querySelector('i').className = 'fas fa-volume-up';
-                        return;
-                    }
-                    
-                    // Get text without code blocks and actions
-                    const clonedBubble = msgBubble.cloneNode(true);
-                    clonedBubble.querySelectorAll('.code-wrapper').forEach(el => el.remove());
-                    clonedBubble.querySelectorAll('.msg-actions').forEach(el => el.remove());
-                    const txt = clonedBubble.innerText.trim();
-                    
-                    if (!txt) {
-                        alert(i18n.t('noTextToRead'));
-                        return;
-                    }
-                    
-                    // Show loading state
-                    btn.classList.add('playing');
-                    const iconElement = btn.querySelector('i');
-                    const oldIcon = iconElement.className;
-                    iconElement.className = 'fas fa-spinner fa-spin';
-                    
-                    try {
-                        const API_URL = 'https://crrotjvxzrldiugfbsvq.supabase.co/functions/v1/text-to-speech';
-                        const response = await fetch(API_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ text: txt, voice: 'alloy' })
+                        
+                        // Add messages from conversation
+                        messages.forEach(msg => {
+                            if (msg.content && msg.role) {
+                                addMsg(msg.role, msg.content);
+                            }
                         });
                         
-                        if (!response.ok) throw new Error('TTS API failed');
-                        
-                        const data = await response.json();
-                        const audioBlob = await fetch(`data:audio/mp3;base64,${data.audioContent}`).then(r => r.blob());
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        
-                        const audio = new Audio(audioUrl);
-                        window.currentAudio = audio;
-                        
-                        iconElement.className = 'fas fa-stop';
-                        
-                        audio.onended = () => {
-                            btn.classList.remove('playing');
-                            iconElement.className = oldIcon;
-                            URL.revokeObjectURL(audioUrl);
-                            window.currentAudio = null;
-                        };
-                        
-                        audio.onerror = () => {
-                            btn.classList.remove('playing');
-                            iconElement.className = oldIcon;
-                            alert(i18n.t('audioError'));
-                            window.currentAudio = null;
-                        };
-                        
-                        await audio.play();
-                        
-                    } catch (error) {
-                        console.error('TTS Error:', error);
-                        btn.classList.remove('playing');
-                        iconElement.className = oldIcon;
-                        alert(i18n.t('audioError'));
+                        dom.box.scrollTop = dom.box.scrollHeight;
                     }
-                }
-            };
-
-            async function loadConversation(telegramId) {
-                const messages = await DB.getConversation(telegramId);
-                if (messages && messages.length > 0) {
-                    document.getElementById('welcome-screen').style.display = 'none';
-                    conversationMessages = messages;
-                    
-                    messages.forEach(msg => {
-                        addMsg(msg.role === 'user' ? 'user' : 'bot', msg.content);
-                    });
-                    
-                    dom.box.scrollTop = dom.box.scrollHeight;
+                } catch (error) {
+                    console.error('Load conversation error:', error);
                 }
             }
 
@@ -1160,6 +1091,16 @@
                 await DB.clearConversation(telegramId);
                 conversationMessages = [];
                 dom.box.innerHTML = '';
+                dom.box.innerHTML = `<div id="welcome-screen" style="text-align:center; padding-top:60px; opacity:0.6;">
+                    <div style="width:80px; height:80px; background:var(--accent-primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow:0 0 30px var(--accent-glow);">
+                        <i class="fas fa-biohazard" style="font-size:2.5rem; color:#fff;"></i>
+                    </div>
+                    <h3 style="font-family:'Orbitron'; margin-bottom:10px;" data-i18n="welcomeTitle">WormGPT V4 Cloud DB</h3>
+                    <p style="font-size:0.9rem;" data-i18n="welcomeSubtitle">Secure & Database-Connected</p>
+                    <div id="limit-badge" style="margin-top:20px; font-size:0.8rem; background:#111; display:inline-block; padding:5px 15px; border-radius:20px; border:1px solid #333;">
+                        <span data-i18n="limitFree">Limit: 10 Messages / Day</span>
+                    </div>
+                </div>`;
                 document.getElementById('welcome-screen').style.display = 'flex';
             }
 
@@ -1176,6 +1117,115 @@
                 }
             };
         })();
+
+        // Global utility functions for event handlers
+        function copyCode(btn) {
+            const wrapper = btn.closest('.code-wrapper');
+            const codeElement = wrapper.querySelector('code');
+            const textToCopy = codeElement.innerText || codeElement.textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        function copyMessage(btn) {
+            const bubble = btn.closest('.msg-bubble');
+            const clone = bubble.cloneNode(true);
+            
+            // Remove action buttons
+            clone.querySelector('.msg-actions')?.remove();
+            
+            // Get clean text
+            const textToCopy = clone.innerText.trim();
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const iconElement = btn.querySelector('i');
+                const oldIcon = iconElement.className;
+                iconElement.className = 'fas fa-check';
+                setTimeout(() => {
+                    iconElement.className = oldIcon;
+                }, 2000);
+            });
+        }
+
+        async function speakMessage(btn) {
+            const bubble = btn.closest('.msg-bubble');
+            
+            // Stop if already playing
+            if (btn.classList.contains('playing')) {
+                if (window.currentAudio) {
+                    window.currentAudio.pause();
+                    window.currentAudio = null;
+                }
+                btn.classList.remove('playing');
+                btn.querySelector('i').className = 'fas fa-volume-up';
+                return;
+            }
+            
+            // Get text without code blocks and actions
+            const clonedBubble = bubble.cloneNode(true);
+            clonedBubble.querySelectorAll('.code-wrapper').forEach(el => el.remove());
+            clonedBubble.querySelectorAll('.msg-actions').forEach(el => el.remove());
+            const txt = clonedBubble.innerText.trim();
+            
+            if (!txt) {
+                alert(i18n.t('noTextToRead'));
+                return;
+            }
+            
+            // Show loading state
+            btn.classList.add('playing');
+            const iconElement = btn.querySelector('i');
+            const oldIcon = iconElement.className;
+            iconElement.className = 'fas fa-spinner fa-spin';
+            
+            try {
+                const API_URL = 'https://crrotjvxzrldiugfbsvq.supabase.co/functions/v1/text-to-speech';
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: txt, voice: 'alloy' })
+                });
+                
+                if (!response.ok) throw new Error('TTS API failed');
+                
+                const data = await response.json();
+                const audioBlob = await fetch(`data:audio/mp3;base64,${data.audioContent}`).then(r => r.blob());
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                const audio = new Audio(audioUrl);
+                window.currentAudio = audio;
+                
+                iconElement.className = 'fas fa-stop';
+                
+                audio.onended = () => {
+                    btn.classList.remove('playing');
+                    iconElement.className = oldIcon;
+                    URL.revokeObjectURL(audioUrl);
+                    window.currentAudio = null;
+                };
+                
+                audio.onerror = () => {
+                    btn.classList.remove('playing');
+                    iconElement.className = oldIcon;
+                    alert(i18n.t('audioError'));
+                    window.currentAudio = null;
+                };
+                
+                await audio.play();
+                
+            } catch (error) {
+                console.error('TTS Error:', error);
+                btn.classList.remove('playing');
+                iconElement.className = oldIcon;
+                alert(i18n.t('audioError'));
+            }
+        }
 
         // Start App
         document.addEventListener('DOMContentLoaded', () => {
