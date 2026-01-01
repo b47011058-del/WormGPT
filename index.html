@@ -1153,24 +1153,7 @@
                         setTimeout(() => showStatus('connected', 'متصل'), 1500);
                     };
                     
-                    const b3 = document.createElement('button');
-                    b3.className = 'action-mini-btn';
-                    b3.innerHTML = '<i class="fas fa-share"></i> <span>مشاركة</span>';
-                    b3.onclick = function() { 
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'WormGPT',
-                                text: text.substring(0, 100) + '...',
-                                url: window.location.href
-                            });
-                        } else {
-                            navigator.clipboard.writeText(window.location.href);
-                            showStatus('connected', 'تم نسخ الرابط!');
-                            setTimeout(() => showStatus('connected', 'متصل'), 1500);
-                        }
-                    };
-                    
-                    acts.append(b1, b2, b3);
+                    acts.append(b1, b2);
                     bubble.append(acts);
                     
                     requestAnimationFrame(() => {
@@ -1314,4 +1297,4 @@
         });
     </script>
 </body>
-                    </html>
+    </html>
