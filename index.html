@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WormGPT Red Edition</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>WormGPT Red Edition - الإصدار المتطور</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
   <style>
-    /* ===== المتغيرات الأساسية ===== */
     :root {
       --primary: #ff003c;
       --primary-dark: #cc002f;
       --primary-light: #ff3366;
+      --primary-glow: rgba(255, 0, 60, 0.3);
       --bg: #000000;
       --bg-light: #0a0a0a;
       --surface: #0f0f0f;
@@ -26,16 +29,17 @@
       --info: #4dabf7;
       --glow: 0 0 10px rgba(255, 0, 60, 0.2);
       --glow-strong: 0 0 20px rgba(255, 0, 60, 0.4);
+      --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      --gradient-hover: linear-gradient(135deg, var(--primary-dark), var(--primary));
     }
-
-    /* ===== Reset وتنسيقات عامة ===== */
+    
     * { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
       -webkit-tap-highlight-color: transparent; 
     }
-
+    
     body { 
       font-family: 'Cairo', sans-serif; 
       background: var(--bg); 
@@ -46,624 +50,772 @@
       overflow: hidden; 
       line-height: 1.6; 
     }
-
-    /* ===== صفحة المصادقة ===== */
+    
+    /* Auth Page */
     .auth-page { 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       min-height: 100vh; 
-      padding: 20px; 
+      padding: 20px;
+      background: radial-gradient(circle at center, #1a0000 0%, #000000 100%);
     }
-
+    
     .auth-card { 
       background: var(--surface); 
       border: 1px solid var(--border); 
-      border-radius: 16px; 
+      border-radius: 24px; 
       padding: 40px; 
-      max-width: 400px; 
+      max-width: 420px; 
       width: 100%; 
-      box-shadow: var(--glow); 
+      box-shadow: var(--glow-strong);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
     }
-
+    
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: var(--gradient);
+      opacity: 0.05;
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+    
     .auth-logo { 
       text-align: center; 
       margin-bottom: 30px; 
+      position: relative;
     }
-
+    
     .auth-logo .avatar { 
-      width: 64px; 
-      height: 64px; 
-      background: var(--primary); 
-      border-radius: 16px; 
+      width: 80px; 
+      height: 80px; 
+      background: var(--gradient); 
+      border-radius: 20px; 
       display: inline-flex; 
       align-items: center; 
       justify-content: center; 
-      font-size: 28px; 
-      font-weight: bold; 
-      margin-bottom: 12px; 
-      box-shadow: var(--glow-strong); 
+      font-size: 36px; 
+      font-weight: 800; 
+      margin-bottom: 16px; 
+      box-shadow: var(--glow-strong);
+      transform: rotate(5deg);
+      transition: transform 0.3s;
     }
-
+    
+    .auth-logo .avatar:hover {
+      transform: rotate(0deg) scale(1.05);
+    }
+    
     .auth-logo h1 { 
-      font-size: 28px; 
+      font-size: 32px; 
+      font-weight: 800;
     }
-
+    
     .auth-logo h1 span { 
-      color: var(--primary); 
+      color: var(--primary);
+      text-shadow: 0 0 10px var(--primary-glow);
     }
-
+    
     .auth-logo p { 
       color: var(--text-tertiary); 
       font-size: 14px; 
       margin-top: 4px; 
     }
-
+    
     .auth-title { 
-      font-size: 20px; 
-      font-weight: bold; 
+      font-size: 22px; 
+      font-weight: 700; 
       text-align: center; 
-      margin-bottom: 24px; 
+      margin-bottom: 24px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-
+    
     .form-group { 
-      margin-bottom: 16px; 
+      margin-bottom: 20px; 
     }
-
+    
     .form-group label { 
       display: block; 
       font-size: 14px; 
       color: var(--text-secondary); 
-      margin-bottom: 6px; 
+      margin-bottom: 8px; 
+      font-weight: 500;
     }
-
+    
     .form-input { 
       width: 100%; 
-      padding: 12px 16px; 
+      padding: 14px 18px; 
       background: var(--surface-light); 
       border: 1px solid var(--border); 
-      border-radius: 10px; 
+      border-radius: 12px; 
       color: var(--text); 
       font-family: 'Cairo', sans-serif; 
-      font-size: 14px; 
+      font-size: 15px; 
       outline: none; 
-      transition: border-color 0.3s; 
+      transition: all 0.3s; 
     }
-
+    
     .form-input:focus { 
       border-color: var(--primary); 
-      box-shadow: 0 0 0 2px rgba(255,0,60,0.1); 
+      box-shadow: 0 0 0 3px var(--primary-glow);
     }
-
+    
     .auth-btn { 
       width: 100%; 
-      padding: 14px; 
-      background: var(--primary); 
+      padding: 16px; 
+      background: var(--gradient); 
       color: white; 
       border: none; 
-      border-radius: 10px; 
+      border-radius: 12px; 
       font-family: 'Cairo', sans-serif; 
       font-size: 16px; 
-      font-weight: bold; 
+      font-weight: 700; 
       cursor: pointer; 
       box-shadow: var(--glow-strong); 
-      transition: all 0.2s; 
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-
+    
+    .auth-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .auth-btn:hover::before {
+      left: 100%;
+    }
+    
     .auth-btn:hover { 
-      background: var(--primary-dark); 
+      background: var(--gradient-hover); 
+      transform: translateY(-2px);
     }
-
+    
     .auth-btn:disabled { 
       opacity: 0.6; 
       cursor: not-allowed; 
+      transform: none;
     }
-
+    
     .auth-switch { 
       text-align: center; 
-      margin-top: 20px; 
+      margin-top: 24px; 
     }
-
+    
     .auth-switch button { 
       background: none; 
       border: none; 
       color: var(--primary); 
       font-family: 'Cairo', sans-serif; 
       cursor: pointer; 
-      font-size: 14px; 
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
     }
-
+    
+    .auth-switch button:hover {
+      text-shadow: 0 0 8px var(--primary-glow);
+    }
+    
     .auth-error { 
-      background: rgba(255,0,60,0.1); 
+      background: rgba(255,0,60,0.15); 
       border: 1px solid var(--primary); 
       color: var(--primary-light); 
-      padding: 10px; 
-      border-radius: 8px; 
+      padding: 12px; 
+      border-radius: 10px; 
       font-size: 13px; 
-      margin-bottom: 16px; 
+      margin-bottom: 20px; 
       text-align: center; 
+      backdrop-filter: blur(5px);
     }
-
-    /* ===== صفحة المحادثة ===== */
+    
+    .telegram-info { 
+      background: rgba(0,255,136,0.1); 
+      border: 1px solid var(--success); 
+      color: var(--success); 
+      padding: 14px; 
+      border-radius: 10px; 
+      font-size: 13px; 
+      margin-bottom: 20px; 
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+    
+    .telegram-info i { 
+      margin-left: 8px; 
+    }
+    
+    .verification-group { 
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .verification-group.show { 
+      display: block; 
+    }
+    
+    /* Chat Page */
     .chat-page { 
       display: flex; 
       flex-direction: column; 
       height: 100vh; 
     }
-
-    /* الهيدر */
+    
     header { 
-      background: var(--bg); 
-      padding: 15px 20px; 
+      background: rgba(0,0,0,0.95); 
+      padding: 15px 25px; 
       display: flex; 
       align-items: center; 
       justify-content: space-between; 
-      border-bottom: 1px solid var(--border); 
-      box-shadow: var(--glow); 
+      border-bottom: 2px solid var(--primary); 
+      box-shadow: var(--glow-strong); 
       z-index: 100; 
-      min-height: 70px; 
+      min-height: 80px;
+      backdrop-filter: blur(10px);
     }
-
+    
     .brand-section { 
       display: flex; 
       align-items: center; 
-      gap: 12px; 
+      gap: 15px; 
     }
-
+    
     .avatar-w { 
-      width: 44px; 
-      height: 44px; 
-      background: var(--primary); 
+      width: 50px; 
+      height: 50px; 
+      background: var(--gradient); 
       color: white; 
-      border-radius: 12px; 
+      border-radius: 14px; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
-      font-weight: bold; 
-      font-size: 22px; 
-      box-shadow: var(--glow); 
+      font-weight: 800; 
+      font-size: 24px; 
+      box-shadow: var(--glow-strong);
+      transform: rotate(5deg);
+      transition: transform 0.3s;
     }
-
+    
+    .avatar-w:hover {
+      transform: rotate(0deg) scale(1.05);
+    }
+    
     .brand-text h1 { 
-      font-size: 20px; 
+      font-size: 22px; 
       line-height: 1.2; 
-      margin-bottom: 3px; 
+      margin-bottom: 4px; 
+      font-weight: 800;
     }
-
+    
     .brand-text h1 span { 
-      color: var(--primary); 
+      color: var(--primary);
+      text-shadow: 0 0 10px var(--primary-glow);
     }
-
+    
     .brand-text p { 
       font-size: 12px; 
       color: var(--text-tertiary); 
     }
-
+    
     .header-actions { 
       display: flex; 
-      gap: 8px; 
+      gap: 10px; 
       align-items: center; 
     }
-
+    
     .header-btn { 
-      width: 40px; 
-      height: 40px; 
+      width: 44px; 
+      height: 44px; 
       background: var(--surface-light); 
       border: 1px solid var(--border); 
-      border-radius: 10px; 
+      border-radius: 12px; 
       color: var(--text-tertiary); 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       cursor: pointer; 
-      transition: all 0.2s; 
-      font-size: 16px; 
+      transition: all 0.3s; 
+      font-size: 18px; 
     }
-
+    
     .header-btn:hover { 
       border-color: var(--primary); 
-      color: var(--primary); 
+      color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--glow);
     }
-
+    
     .premium-badge { 
       display: none; 
-      background: rgba(255,170,0,0.15); 
+      background: linear-gradient(135deg, rgba(255,170,0,0.15), rgba(255,170,0,0.05));
       border: 1px solid rgba(255,170,0,0.3); 
       color: var(--warning); 
-      padding: 4px 12px; 
-      border-radius: 20px; 
-      font-size: 13px; 
+      padding: 6px 16px; 
+      border-radius: 30px; 
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(5px);
     }
-
+    
     .premium-badge.show { 
       display: flex; 
       align-items: center; 
-      gap: 4px; 
+      gap: 6px; 
     }
-
-    /* منطقة المحادثة */
+    
     #chat { 
       flex: 1; 
       overflow-y: auto; 
-      padding: 20px; 
+      padding: 25px; 
       display: flex; 
       flex-direction: column; 
       gap: 20px; 
-      background: radial-gradient(circle at center, #0a0000 0%, #000000 100%); 
+      background: radial-gradient(circle at center, #1a0000 0%, #000000 100%);
     }
-
+    
     .message-row { 
       display: flex; 
-      gap: 12px; 
+      gap: 15px; 
       align-items: flex-start; 
-      animation: fadeInUp 0.3s ease; 
+      animation: fadeInUp 0.4s ease; 
     }
-
+    
     .bot-icon { 
-      width: 38px; 
-      height: 38px; 
+      width: 42px; 
+      height: 42px; 
       background: var(--surface-light); 
       border: 1px solid var(--primary); 
-      border-radius: 10px; 
+      border-radius: 12px; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       flex-shrink: 0; 
       color: var(--primary); 
-      font-size: 18px; 
+      font-size: 20px;
+      box-shadow: var(--glow);
     }
-
+    
     .msg-content { 
       background: var(--surface); 
-      padding: 16px; 
-      border-radius: 12px; 
-      border-right: 3px solid var(--primary); 
-      max-width: calc(100% - 50px); 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+      padding: 18px; 
+      border-radius: 16px; 
+      border-right: 4px solid var(--primary); 
+      max-width: calc(100% - 60px); 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-
+    
     .msg-text { 
-      font-size: 14px; 
+      font-size: 15px; 
       line-height: 1.7; 
       color: var(--text-secondary); 
-      white-space: pre-wrap; 
+      white-space: pre-wrap;
     }
-
-    /* تنسيق كتلة الكود */
-    .code-block {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      margin: 12px 0;
-      direction: ltr;
-      text-align: left;
-    }
-
-    .code-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: var(--surface-lighter);
-      border-bottom: 1px solid var(--border);
-      border-radius: 10px 10px 0 0;
-    }
-
-    .code-language {
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .copy-code-btn {
-      background: var(--surface-light);
-      border: 1px solid var(--border);
-      color: var(--text-tertiary);
-      padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .copy-code-btn:hover {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .code-block pre {
-      margin: 0;
-      padding: 16px;
-      overflow-x: auto;
-      background: var(--bg-light);
-      border-radius: 0 0 10px 10px;
-    }
-
-    .code-block code {
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    /* زر نسخ الرد كامل */
-    .copy-full-response {
-      background: var(--surface-light);
-      border: 1px solid var(--border);
-      color: var(--text-tertiary);
-      padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 8px;
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .copy-full-response:hover {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
+    
     .user-row { 
       justify-content: flex-end; 
       display: flex; 
     }
-
+    
     .user-msg { 
-      background: var(--surface-lighter); 
-      color: var(--text); 
-      padding: 12px 16px; 
-      border-radius: 12px 12px 0 12px; 
+      background: var(--gradient); 
+      color: white; 
+      padding: 14px 20px; 
+      border-radius: 20px 20px 0 20px; 
       max-width: 85%; 
-      font-size: 14px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+      font-size: 15px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-
-    /* منطقة الإدخال */
+    
     .footer-area { 
-      background: var(--bg); 
+      background: rgba(0,0,0,0.95); 
       border-top: 2px solid var(--primary); 
-      box-shadow: 0 -5px 20px rgba(255,0,60,0.1); 
-      padding: 16px 20px 20px; 
-      z-index: 100; 
+      box-shadow: 0 -5px 25px rgba(255,0,60,0.2); 
+      padding: 18px 25px 22px; 
+      z-index: 100;
+      backdrop-filter: blur(10px);
     }
-
+    
     .model-selector { 
       display: flex; 
-      gap: 8px; 
-      margin-bottom: 12px; 
+      gap: 10px; 
+      margin-bottom: 15px; 
       background: var(--surface-light); 
-      padding: 10px; 
-      border-radius: 10px; 
+      padding: 12px; 
+      border-radius: 14px; 
       border: 1px solid var(--border); 
     }
-
+    
     .model-btn { 
       flex: 1; 
       background: var(--surface-lighter); 
       border: 1px solid var(--border); 
       color: var(--text-tertiary); 
-      padding: 10px 8px; 
-      border-radius: 8px; 
+      padding: 12px 8px; 
+      border-radius: 10px; 
       cursor: pointer; 
       font-family: 'Cairo', sans-serif; 
-      font-size: 13px; 
-      font-weight: bold; 
+      font-size: 14px; 
+      font-weight: 600; 
       transition: all 0.3s; 
     }
-
+    
     .model-btn.active { 
-      background: var(--primary); 
+      background: var(--gradient); 
       color: white; 
       border-color: var(--primary); 
-      box-shadow: var(--glow); 
+      box-shadow: var(--glow);
+      transform: scale(1.02);
     }
-
+    
+    .model-btn:not(.active):hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
     .input-container { 
       display: flex; 
       align-items: center; 
-      gap: 12px; 
+      gap: 15px; 
     }
-
+    
     .input-wrapper { 
       flex: 1; 
       display: flex; 
       align-items: center; 
       background: var(--surface-light); 
-      padding: 4px 16px; 
-      border-radius: 12px; 
+      padding: 4px 20px; 
+      border-radius: 16px; 
       border: 1px solid var(--border); 
+      transition: all 0.3s;
     }
-
+    
     .input-wrapper:focus-within { 
       border-color: var(--primary); 
-      box-shadow: 0 0 0 2px rgba(255,0,60,0.1); 
+      box-shadow: 0 0 0 3px var(--primary-glow);
     }
-
+    
     input[type="text"] { 
       flex: 1; 
       background: transparent; 
       border: none; 
       color: var(--text); 
-      padding: 12px 8px; 
+      padding: 14px 8px; 
       font-family: 'Cairo', sans-serif; 
-      font-size: 14px; 
+      font-size: 15px; 
       width: 100%; 
       outline: none; 
     }
-
+    
     input[type="text"]::placeholder { 
       color: var(--text-tertiary); 
     }
-
+    
     .send-btn { 
-      background: var(--primary); 
+      background: var(--gradient); 
       color: white; 
       border: none; 
-      width: 52px; 
-      height: 52px; 
-      border-radius: 12px; 
+      width: 58px; 
+      height: 58px; 
+      border-radius: 16px; 
       cursor: pointer; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       box-shadow: var(--glow-strong); 
-      transition: all 0.2s; 
+      transition: all 0.3s; 
+      font-size: 22px;
     }
-
+    
     .send-btn:hover { 
-      background: var(--primary-dark); 
-      transform: translateY(-2px); 
+      transform: translateY(-3px) scale(1.05);
     }
-
+    
     .send-btn:disabled { 
       opacity: 0.5; 
       cursor: not-allowed; 
       transform: none; 
     }
-
+    
     .info-bar { 
       text-align: center; 
-      font-size: 12px; 
+      font-size: 13px; 
       color: var(--text-tertiary); 
-      margin-top: 12px; 
+      margin-top: 15px; 
     }
-
+    
     .info-bar button { 
       background: none; 
       border: none; 
       color: var(--primary); 
       cursor: pointer; 
       font-family: 'Cairo', sans-serif; 
-      font-size: 12px; 
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
     }
-
-    /* ===== نافذة الترخيص ===== */
+    
+    .info-bar button:hover {
+      text-shadow: 0 0 8px var(--primary-glow);
+    }
+    
+    /* Code Blocks */
+    .code-block-wrapper {
+      margin: 15px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface-lighter);
+    }
+    
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background: var(--surface-light);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .code-language {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .copy-code-btn {
+      background: var(--surface-lighter);
+      border: 1px solid var(--border);
+      color: var(--text-tertiary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .copy-code-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--surface);
+    }
+    
+    .copy-code-btn.copied {
+      background: var(--success);
+      color: black;
+      border-color: var(--success);
+    }
+    
+    pre {
+      margin: 0 !important;
+      padding: 15px !important;
+      background: #1a1a1a !important;
+    }
+    
+    code {
+      font-family: 'Fira Code', monospace !important;
+      font-size: 14px !important;
+    }
+    
+    /* Copy Message Button */
+    .copy-message-btn {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+      transition: all 0.3s;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    
+    .copy-message-btn:hover {
+      color: var(--primary);
+      background: var(--surface-light);
+    }
+    
+    /* License Modal */
     .modal-overlay { 
       display: none; 
       position: fixed; 
       inset: 0; 
-      background: rgba(0,0,0,0.9); 
+      background: rgba(0,0,0,0.95); 
       z-index: 200; 
       align-items: center; 
       justify-content: center; 
       padding: 20px; 
-      backdrop-filter: blur(4px); 
+      backdrop-filter: blur(10px);
     }
-
+    
     .modal-overlay.show { 
       display: flex; 
     }
-
+    
     .modal-card { 
       background: linear-gradient(135deg, var(--surface-light), var(--surface)); 
       border: 2px solid var(--primary); 
-      border-radius: 16px; 
-      padding: 32px; 
-      max-width: 420px; 
+      border-radius: 24px; 
+      padding: 40px; 
+      max-width: 450px; 
       width: 100%; 
       box-shadow: var(--glow-strong); 
-      position: relative; 
+      position: relative;
+      animation: scaleIn 0.3s ease;
     }
-
+    
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    
     .modal-close { 
       position: absolute; 
-      top: 12px; 
-      left: 12px; 
-      background: none; 
-      border: none; 
+      top: 15px; 
+      left: 15px; 
+      background: var(--surface-lighter); 
+      border: 1px solid var(--border); 
       color: var(--text-tertiary); 
       cursor: pointer; 
-      font-size: 20px; 
+      font-size: 18px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
     }
-
+    
+    .modal-close:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
     .modal-icon { 
       text-align: center; 
-      margin-bottom: 20px; 
+      margin-bottom: 25px; 
     }
-
+    
     .modal-icon .icon-wrap { 
       display: inline-flex; 
-      width: 64px; 
-      height: 64px; 
+      width: 80px; 
+      height: 80px; 
       background: rgba(255,0,60,0.15); 
-      border-radius: 16px; 
+      border-radius: 20px; 
       align-items: center; 
       justify-content: center; 
-      font-size: 32px; 
+      font-size: 40px;
+      border: 2px solid var(--primary);
     }
-
+    
     .modal-title { 
       text-align: center; 
-      font-size: 22px; 
-      font-weight: bold; 
-      color: var(--primary); 
-      margin-bottom: 6px; 
+      font-size: 26px; 
+      font-weight: 800; 
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px; 
     }
-
+    
     .modal-desc { 
       text-align: center; 
       color: var(--text-tertiary); 
-      font-size: 14px; 
-      margin-bottom: 20px; 
+      font-size: 15px; 
+      margin-bottom: 25px; 
     }
-
+    
     .feature-item { 
       display: flex; 
       align-items: center; 
-      gap: 10px; 
+      gap: 12px; 
       background: var(--surface-lighter); 
-      padding: 10px 14px; 
-      border-radius: 10px; 
+      padding: 12px 18px; 
+      border-radius: 14px; 
       border: 1px solid var(--border); 
-      margin-bottom: 8px; 
-      font-size: 13px; 
+      margin-bottom: 10px; 
+      font-size: 14px;
+      transition: all 0.3s;
     }
-
+    
+    .feature-item:hover {
+      border-color: var(--primary);
+      transform: translateX(-5px);
+    }
+    
     .license-input { 
       width: 100%; 
-      padding: 12px; 
+      padding: 15px; 
       background: var(--surface-light); 
       border: 1px solid var(--border); 
-      border-radius: 10px; 
+      border-radius: 14px; 
       color: var(--text); 
-      font-family: monospace; 
-      font-size: 15px; 
+      font-family: 'Fira Code', monospace; 
+      font-size: 16px; 
       text-align: center; 
       letter-spacing: 3px; 
       outline: none; 
-      margin: 16px 0; 
+      margin: 20px 0; 
     }
-
+    
     .license-input:focus { 
       border-color: var(--primary); 
+      box-shadow: 0 0 0 3px var(--primary-glow);
     }
-
-    /* ===== كلاسات مساعدة ===== */
+    
+    /* Hidden */
     .hidden { 
       display: none !important; 
     }
-
-    /* ===== Animations ===== */
+    
+    /* Animations */
     @keyframes fadeInUp { 
       from { 
         opacity: 0; 
-        transform: translateY(10px); 
+        transform: translateY(15px); 
       } 
       to { 
         opacity: 1; 
         transform: translateY(0); 
       } 
     }
-
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     .loading-dots { 
       display: inline-flex; 
-      gap: 4px; 
+      gap: 5px; 
     }
-
+    
     .loading-dots span { 
       width: 8px; 
       height: 8px; 
@@ -671,59 +823,88 @@
       border-radius: 50%; 
       animation: bounce 1.4s infinite ease-in-out; 
     }
-
-    .loading-dots span:nth-child(1) { 
-      animation-delay: 0s; 
-    }
-
-    .loading-dots span:nth-child(2) { 
-      animation-delay: 0.2s; 
-    }
-
-    .loading-dots span:nth-child(3) { 
-      animation-delay: 0.4s; 
-    }
-
+    
+    .loading-dots span:nth-child(1) { animation-delay: 0s; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    
     @keyframes bounce { 
-      0%, 60%, 100% { 
-        transform: translateY(0); 
-      } 
-      30% { 
-        transform: translateY(-10px); 
-      } 
+      0%, 60%, 100% { transform: translateY(0); } 
+      30% { transform: translateY(-10px); } 
     }
-
-    /* ===== Scrollbar ===== */
+    
+    /* Scrollbar */
     ::-webkit-scrollbar { 
-      width: 6px; 
+      width: 8px; 
     }
-
+    
     ::-webkit-scrollbar-track { 
       background: var(--bg); 
     }
-
+    
     ::-webkit-scrollbar-thumb { 
       background: var(--border); 
-      border-radius: 3px; 
+      border-radius: 4px; 
     }
-
+    
     ::-webkit-scrollbar-thumb:hover { 
       background: var(--primary); 
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .auth-card {
+        padding: 30px 20px;
+      }
+      
+      header {
+        padding: 12px 15px;
+        min-height: 70px;
+      }
+      
+      .brand-text h1 {
+        font-size: 18px;
+      }
+      
+      .footer-area {
+        padding: 15px;
+      }
+      
+      .model-selector {
+        padding: 8px;
+      }
+      
+      .model-btn {
+        padding: 10px 5px;
+        font-size: 13px;
+      }
+      
+      .msg-content {
+        max-width: calc(100% - 50px);
+        padding: 14px;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- ===== صفحة المصادقة ===== -->
+<!-- ============ AUTH PAGE ============ -->
 <div id="authPage" class="auth-page">
   <div class="auth-card">
     <div class="auth-logo">
       <div class="avatar">W</div>
       <h1>Worm<span>GPT</span></h1>
-      <p>Red Edition - الإصدار المتقدم</p>
+      <p>Red Edition - الإصدار المتطور</p>
     </div>
     <div class="auth-title" id="authTitle">تسجيل الدخول</div>
     <div id="authError" class="auth-error hidden"></div>
+    
+    <!-- Telegram Bot Info -->
+    <div class="telegram-info hidden" id="telegramInfo">
+      <i class="fab fa-telegram"></i>
+      <span id="telegramMessage"></span>
+    </div>
+    
     <form id="authForm" onsubmit="handleAuth(event)">
       <div class="form-group">
         <label>البريد الإلكتروني</label>
@@ -733,6 +914,19 @@
         <label>كلمة المرور</label>
         <input type="password" id="authPassword" class="form-input" placeholder="••••••••" required minlength="6">
       </div>
+      
+      <!-- Verification Code Field (ظهر فقط عند انشاء حساب) -->
+      <div class="form-group verification-group" id="verificationGroup">
+        <label>رمز التحقق من تليجرام</label>
+        <input type="text" id="verificationCode" class="form-input" placeholder="أدخل الرقم المرسل من البوت" maxlength="6">
+        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+          <i class="fab fa-telegram"></i> تواصل مع البوت: @WormGPT_verify_bot
+        </p>
+        <button type="button" class="auth-btn" style="margin-top: 10px;" onclick="requestTelegramVerification()">
+          <i class="fab fa-telegram"></i> إرسال رمز التحقق
+        </button>
+      </div>
+      
       <button type="submit" class="auth-btn" id="authBtn">دخول</button>
     </form>
     <div class="auth-switch">
@@ -741,7 +935,7 @@
   </div>
 </div>
 
-<!-- ===== صفحة المحادثة ===== -->
+<!-- ============ CHAT PAGE ============ -->
 <div id="chatPage" class="chat-page hidden">
   <header>
     <div class="brand-section">
@@ -754,6 +948,7 @@
     <div class="header-actions">
       <div class="premium-badge" id="premiumBadge">👑 Premium</div>
       <button class="header-btn" onclick="openLicenseModal()" title="مفتاح التفعيل"><i class="fas fa-key"></i></button>
+      <button class="header-btn" onclick="clearChat()" title="مسح المحادثة"><i class="fas fa-trash"></i></button>
       <button class="header-btn" onclick="handleSignOut()" title="تسجيل الخروج"><i class="fas fa-sign-out-alt"></i></button>
     </div>
   </header>
@@ -763,8 +958,9 @@
       <div class="bot-icon"><i class="fas fa-robot"></i></div>
       <div class="msg-content">
         <div class="msg-text">
-          أهلاً بك في <strong>WormGPT Red Edition</strong> 🔴<br>
-          أنا مساعدك الذكي المتقدم. اكتب سؤالك وسأساعدك!
+          أهلاً بك في <strong>WormGPT py @Hackerexsos </strong> 🔴<br>
+          أنا مساعدك الذكي المتقدم. اكتب سؤالك وسأساعدك!<br><br>
+          <span style="color: var(--primary); font-size: 13px;">✨ ميزات جديدة: نسخ الأكواد البرمجية، نسخ الردود الكاملة</span>
         </div>
       </div>
     </div>
@@ -791,7 +987,7 @@
   </div>
 </div>
 
-<!-- ===== نافذة الترخيص ===== -->
+<!-- ============ LICENSE MODAL ============ -->
 <div class="modal-overlay" id="licenseModal">
   <div class="modal-card">
     <button class="modal-close" onclick="closeLicenseModal()"><i class="fas fa-times"></i></button>
@@ -805,7 +1001,7 @@
     <div id="licenseActivation">
       <input type="text" class="license-input" id="licenseKeyInput" placeholder="XXXX-XXXX-XXXX-XXXX" dir="ltr">
       <button class="auth-btn" onclick="activateLicense()" id="activateBtn">🔑 تفعيل المفتاح</button>
-      <p style="text-align:center;font-size:12px;color:var(--text-tertiary);margin-top:12px;">للحصول على مفتاح تفعيل، تواصل مع الإدارة</p>
+      <p style="text-align:center;font-size:13px;color:var(--text-tertiary);margin-top:15px;">للحصول على مفتاح تفعيل، تواصل مع الإدارة</p>
     </div>
     <div id="licensePremiumOk" class="hidden">
       <button class="auth-btn" onclick="closeLicenseModal()">حسناً</button>
@@ -814,27 +1010,134 @@
 </div>
 
 <script>
-// ===== إعدادات Supabase =====
 const SUPABASE_URL = 'https://ericgpjgmmicasbyhvtn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaWNncGpnbW1pY2FzYnlodnRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMjMxOTUsImV4cCI6MjA4NTY5OTE5NX0.v85Slp5Fx1eP2p6f765IsX9vQLO3uBdYsddPoQODlK4';
 const CHAT_ENDPOINT = SUPABASE_URL + '/functions/v1/chat';
+const TELEGRAM_BOT_TOKEN = '7278916431:AAF3DKd6fGz_17kLsrE1PeC53Na5S9I_REI'; // ضع توكن البوت هنا
+const TELEGRAM_BOT_USERNAME = 'WormGPT1lBOT'; // اسم المستخدم للبوت
 
-// ===== متغيرات عامة =====
 let currentModel = 'V1';
 let isLoginMode = true;
 let accessToken = null;
 let currentUser = null;
 let isPremium = false;
 let isSending = false;
+let pendingVerification = null; // تخزين بيانات التحقق المؤقتة
 
-// ===== دوال مساعدة لـ Supabase =====
+// ===== Initialize Clipboard =====
+document.addEventListener('DOMContentLoaded', function() {
+  initializeClipboard();
+});
+
+function initializeClipboard() {
+  if (typeof ClipboardJS !== 'undefined') {
+    const clipboard = new ClipboardJS('.copy-code-btn, .copy-message-btn', {
+      text: function(trigger) {
+        if (trigger.classList.contains('copy-code-btn')) {
+          const codeBlock = trigger.closest('.code-block-wrapper').querySelector('code');
+          return codeBlock ? codeBlock.textContent : '';
+        } else if (trigger.classList.contains('copy-message-btn')) {
+          const messageDiv = trigger.closest('.msg-content, .user-msg');
+          return messageDiv ? messageDiv.querySelector('.msg-text, .user-msg').textContent : '';
+        }
+        return '';
+      }
+    });
+
+    clipboard.on('success', function(e) {
+      const trigger = e.trigger;
+      const originalText = trigger.innerHTML;
+      
+      if (trigger.classList.contains('copy-code-btn')) {
+        trigger.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
+        trigger.classList.add('copied');
+      } else {
+        trigger.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+      }
+      
+      setTimeout(() => {
+        if (trigger.classList.contains('copy-code-btn')) {
+          trigger.innerHTML = '<i class="far fa-copy"></i> نسخ';
+          trigger.classList.remove('copied');
+        } else {
+          trigger.innerHTML = '<i class="far fa-copy"></i> نسخ';
+        }
+      }, 2000);
+      
+      e.clearSelection();
+    });
+  }
+}
+
+// ===== Message Copy Function =====
+function addCopyButtonToMessage(messageElement, isUser = false) {
+  if (!messageElement.querySelector('.copy-message-btn')) {
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-message-btn';
+    copyBtn.innerHTML = '<i class="far fa-copy"></i> نسخ';
+    copyBtn.setAttribute('data-clipboard-text', messageElement.textContent);
+    
+    if (isUser) {
+      messageElement.appendChild(copyBtn);
+    } else {
+      const msgContent = messageElement.querySelector('.msg-content');
+      if (msgContent) {
+        msgContent.style.position = 'relative';
+        copyBtn.style.position = 'absolute';
+        copyBtn.style.top = '10px';
+        copyBtn.style.left = '10px';
+        msgContent.appendChild(copyBtn);
+      }
+    }
+  }
+}
+
+// ===== Format Code Blocks =====
+function formatMessageWithCodeBlocks(message) {
+  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+  let formattedMessage = message;
+  let match;
+  
+  while ((match = codeBlockRegex.exec(message)) !== null) {
+    const language = match[1] || 'text';
+    const code = match[2].trim();
+    
+    const codeBlock = `
+      <div class="code-block-wrapper">
+        <div class="code-header">
+          <span class="code-language">${language}</span>
+          <button class="copy-code-btn" data-clipboard-text="${escapeHtml(code)}">
+            <i class="far fa-copy"></i> نسخ
+          </button>
+        </div>
+        <pre><code class="language-${language}">${escapeHtml(code)}</code></pre>
+      </div>
+    `;
+    
+    formattedMessage = formattedMessage.replace(match[0], codeBlock);
+  }
+  
+  // تطبيق التنسيق على الأوامر البرمجية القصيرة
+  const inlineCodeRegex = /`([^`]+)`/g;
+  formattedMessage = formattedMessage.replace(inlineCodeRegex, '<code style="background: var(--surface-lighter); padding: 2px 6px; border-radius: 4px; color: var(--primary); font-family: monospace;">$1</code>');
+  
+  return formattedMessage;
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ===== Supabase API helpers =====
 async function supabaseAuth(endpoint, body) {
   const res = await fetch(SUPABASE_URL + '/auth/v1/' + endpoint, {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json', 
-      'apikey': SUPABASE_KEY 
-    },
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
     body: JSON.stringify(body)
   });
   return res.json();
@@ -862,56 +1165,167 @@ async function supabaseQuery(table, options = {}) {
   return res.json();
 }
 
-// ===== دوال المصادقة =====
+// ===== Telegram Verification =====
+async function sendTelegramCode(chatId) {
+  const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6 أرقام
+  const text = `🔐 *رمز التحقق الخاص بك في WormGPT*\n\nالرمز: *${code}*\n\n⏰ هذا الرقم ساري لمدة 5 دقائق\n\nإذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة.`;
+  
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: text,
+        parse_mode: 'Markdown'
+      })
+    });
+    
+    if (!response.ok) throw new Error('فشل إرسال رمز التحقق');
+    
+    // تخزين الرمز مع وقت الانتهاء
+    pendingVerification = {
+      code: code,
+      chatId: chatId,
+      expiresAt: Date.now() + 5 * 60 * 1000 // 5 دقائق
+    };
+    
+    return true;
+  } catch (error) {
+    console.error('Telegram error:', error);
+    return false;
+  }
+}
+
+function verifyTelegramCode(inputCode) {
+  if (!pendingVerification) return false;
+  if (Date.now() > pendingVerification.expiresAt) {
+    pendingVerification = null;
+    return false;
+  }
+  return pendingVerification.code === inputCode;
+}
+
+// ===== Auth =====
 function toggleAuthMode() {
   isLoginMode = !isLoginMode;
   document.getElementById('authTitle').textContent = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
   document.getElementById('authBtn').textContent = isLoginMode ? 'دخول' : 'إنشاء حساب';
   document.getElementById('authSwitchBtn').textContent = isLoginMode ? 'ليس لديك حساب؟ أنشئ حساباً جديداً' : 'لديك حساب؟ سجل الدخول';
   document.getElementById('authError').classList.add('hidden');
+  document.getElementById('telegramInfo').classList.add('hidden');
+  
+  // إظهار/إخفاء حقل رمز التحقق
+  const verificationGroup = document.getElementById('verificationGroup');
+  if (!isLoginMode) {
+    verificationGroup.classList.add('show');
+  } else {
+    verificationGroup.classList.remove('show');
+    document.getElementById('verificationCode').value = '';
+    pendingVerification = null;
+  }
 }
 
 async function handleAuth(e) {
   e.preventDefault();
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
+  const verificationCode = document.getElementById('verificationCode').value;
   const btn = document.getElementById('authBtn');
   const errorDiv = document.getElementById('authError');
+  const telegramInfo = document.getElementById('telegramInfo');
+  const telegramMessage = document.getElementById('telegramMessage');
   
   btn.disabled = true;
   btn.textContent = 'جاري...';
   errorDiv.classList.add('hidden');
+  telegramInfo.classList.add('hidden');
   
   try {
     if (isLoginMode) {
+      // تسجيل الدخول العادي
       const data = await supabaseAuth('token?grant_type=password', { email, password });
       if (data.error) throw new Error(data.error_description || data.msg || 'فشل تسجيل الدخول');
+      
       accessToken = data.access_token;
       currentUser = data.user;
       await checkPremiumStatus();
       showChatPage();
     } else {
+      // إنشاء حساب جديد - نطلب رمز التحقق أولاً
+      if (!verificationCode) {
+        throw new Error('يرجى إدخال رمز التحقق من تليجرام');
+      }
+      
+      // التحقق من الرمز
+      if (!verifyTelegramCode(verificationCode)) {
+        throw new Error('رمز التحقق غير صحيح أو منتهي الصلاحية');
+      }
+      
+      // إنشاء الحساب بعد التحقق
       const data = await supabaseAuth('signup', { email, password });
       if (data.error) throw new Error(data.error_description || data.msg || 'فشل إنشاء الحساب');
-      errorDiv.textContent = 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول';
-      errorDiv.style.borderColor = 'var(--success)';
-      errorDiv.style.color = 'var(--success)';
-      errorDiv.style.background = 'rgba(0,255,136,0.1)';
-      errorDiv.classList.remove('hidden');
+      
+      // حفظ معرف التليجرام في ملف المستخدم
+      if (pendingVerification && pendingVerification.chatId) {
+        try {
+          await supabaseQuery('profiles', {
+            method: 'POST',
+            body: { 
+              user_id: data.user.id, 
+              telegram_chat_id: pendingVerification.chatId,
+              is_premium: false
+            }
+          });
+        } catch (e) {
+          console.error('Failed to save Telegram ID:', e);
+        }
+      }
+      
+      telegramMessage.textContent = '✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول';
+      telegramInfo.style.borderColor = 'var(--success)';
+      telegramInfo.style.color = 'var(--success)';
+      telegramInfo.classList.remove('hidden');
+      
+      // التحويل إلى وضع تسجيل الدخول
       isLoginMode = true;
       document.getElementById('authTitle').textContent = 'تسجيل الدخول';
       document.getElementById('authBtn').textContent = 'دخول';
+      document.getElementById('verificationGroup').classList.remove('show');
+      document.getElementById('verificationCode').value = '';
+      pendingVerification = null;
     }
   } catch (err) {
     errorDiv.textContent = err.message;
-    errorDiv.style.borderColor = 'var(--primary)';
-    errorDiv.style.color = 'var(--primary-light)';
-    errorDiv.style.background = 'rgba(255,0,60,0.1)';
     errorDiv.classList.remove('hidden');
   }
   
   btn.disabled = false;
   btn.textContent = isLoginMode ? 'دخول' : 'إنشاء حساب';
+}
+
+// دالة لبدء عملية التحقق (يمكن استدعاؤها عند الضغط على زر في واجهة المستخدم)
+async function requestTelegramVerification() {
+  const chatId = prompt('الرجاء إدخال معرف التليجرام الخاص بك (Chat ID):\n(يمكنك الحصول عليه من bot @userinfobot)');
+  if (!chatId) return;
+  
+  const telegramInfo = document.getElementById('telegramInfo');
+  const telegramMessage = document.getElementById('telegramMessage');
+  
+  telegramMessage.textContent = 'جاري إرسال رمز التحقق...';
+  telegramInfo.classList.remove('hidden');
+  
+  const success = await sendTelegramCode(chatId);
+  
+  if (success) {
+    telegramMessage.textContent = '✅ تم إرسال رمز التحقق إلى تليجرام. الرجاء إدخاله في الحقل أدناه';
+    telegramInfo.style.borderColor = 'var(--success)';
+    telegramInfo.style.color = 'var(--success)';
+  } else {
+    telegramMessage.textContent = '❌ فشل إرسال رمز التحقق. تأكد من معرف التليجرام وحاول مرة أخرى';
+    telegramInfo.style.borderColor = 'var(--primary)';
+    telegramInfo.style.color = 'var(--primary-light)';
+  }
 }
 
 async function checkPremiumStatus() {
@@ -933,26 +1347,43 @@ function updatePremiumUI() {
   const status = document.getElementById('licenseStatus');
   if (isPremium) {
     badge.classList.add('show');
-    status.innerHTML = '<span style="color:var(--warning)">👑 Premium مفعل</span>';
+    status.innerHTML = '<span style="color:var(--warning)"><i class="fas fa-crown"></i> Premium مفعل</span>';
   } else {
     badge.classList.remove('show');
-    status.innerHTML = '<button onclick="openLicenseModal()">🔑 ترقية إلى Premium</button>';
+    status.innerHTML = '<button onclick="openLicenseModal()"><i class="fas fa-key"></i> ترقية إلى Premium</button>';
   }
 }
 
 function showChatPage() {
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('chatPage').classList.remove('hidden');
+  
+  // إعادة تهيئة Clipboard بعد ظهور الصفحة
+  setTimeout(initializeClipboard, 500);
+}
+
+function clearChat() {
+  if (confirm('هل أنت متأكد من مسح المحادثة؟')) {
+    const chat = document.getElementById('chat');
+    chat.innerHTML = `
+      <div class="message-row">
+        <div class="bot-icon"><i class="fas fa-robot"></i></div>
+        <div class="msg-content">
+          <div class="msg-text">
+            أهلاً بك في <strong>WormGPT Red Edition</strong> 🔴<br>
+            تم مسح المحادثة. كيف يمكنني مساعدتك؟
+          </div>
+        </div>
+      </div>
+    `;
+  }
 }
 
 async function handleSignOut() {
   if (accessToken) {
     await fetch(SUPABASE_URL + '/auth/v1/logout', {
       method: 'POST',
-      headers: { 
-        'apikey': SUPABASE_KEY, 
-        'Authorization': 'Bearer ' + accessToken 
-      }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
     }).catch(() => {});
   }
   accessToken = null;
@@ -962,9 +1393,11 @@ async function handleSignOut() {
   document.getElementById('authPage').classList.remove('hidden');
   document.getElementById('authEmail').value = '';
   document.getElementById('authPassword').value = '';
+  document.getElementById('verificationCode').value = '';
+  pendingVerification = null;
 }
 
-// ===== دوال المحادثة =====
+// ===== Chat =====
 function selectModel(model, btn) {
   if ((model === 'V2' || model === 'V3') && !isPremium) {
     openLicenseModal();
@@ -973,130 +1406,6 @@ function selectModel(model, btn) {
   currentModel = model;
   document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-}
-
-// دالة لنسخ النص إلى الحافظة
-async function copyToClipboard(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-
-// دالة لنسخ محتوى كتلة الكود
-async function copyCodeBlock(button, codeContent) {
-  const originalText = button.textContent;
-  const success = await copyToClipboard(codeContent);
-  
-  if (success) {
-    button.textContent = '✓ تم النسخ';
-    button.style.background = 'var(--success)';
-    button.style.color = 'var(--bg)';
-    
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.background = '';
-      button.style.color = '';
-    }, 2000);
-  } else {
-    alert('فشل نسخ الكود');
-  }
-}
-
-// دالة لنسخ الرد كامل
-async function copyFullResponse(button, messageId) {
-  const messageText = document.getElementById(messageId).innerText;
-  const originalText = button.textContent;
-  const success = await copyToClipboard(messageText);
-  
-  if (success) {
-    button.textContent = '✓ تم نسخ الرد';
-    button.style.background = 'var(--success)';
-    button.style.color = 'var(--bg)';
-    
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.background = '';
-      button.style.color = '';
-    }, 2000);
-  }
-}
-
-// دالة لتنسيق النص واكتشاف كتل الكود
-function formatMessageWithCodeBlocks(text) {
-  // نمط للبحث عن كتل الكود (```لغة\nكود```)
-  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
-  let lastIndex = 0;
-  let parts = [];
-  let match;
-
-  while ((match = codeBlockRegex.exec(text)) !== null) {
-    // إضافة النص قبل كتلة الكود
-    if (match.index > lastIndex) {
-      parts.push({
-        type: 'text',
-        content: text.substring(lastIndex, match.index)
-      });
-    }
-
-    // إضافة كتلة الكود
-    parts.push({
-      type: 'code',
-      language: match[1] || 'text',
-      code: match[2].trim()
-    });
-
-    lastIndex = match.index + match[0].length;
-  }
-
-  // إضافة النص المتبقي
-  if (lastIndex < text.length) {
-    parts.push({
-      type: 'text',
-      content: text.substring(lastIndex)
-    });
-  }
-
-  return parts;
-}
-
-// دالة لإنشاء HTML للرسالة مع كتل الكود
-function createMessageHTML(messageId, text) {
-  const parts = formatMessageWithCodeBlocks(text);
-  let html = '';
-
-  parts.forEach((part, index) => {
-    if (part.type === 'text') {
-      html += `<div class="msg-text-part">${escapeHtml(part.content)}</div>`;
-    } else {
-      const codeBlockId = `code-${messageId}-${index}`;
-      html += `
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-language">${escapeHtml(part.language)}</span>
-            <button class="copy-code-btn" onclick="copyCodeBlock(this, document.getElementById('${codeBlockId}').textContent)">📋 نسخ الكود</button>
-          </div>
-          <pre><code id="${codeBlockId}">${escapeHtml(part.code)}</code></pre>
-        </div>
-      `;
-    }
-  });
-
-  html += `
-    <div style="display:flex; justify-content:flex-end; margin-top:12px;">
-      <button class="copy-full-response" onclick="copyFullResponse(this, '${messageId}')">📋 نسخ الرد كامل</button>
-    </div>
-  `;
-
-  return html;
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
 }
 
 async function sendMessage() {
@@ -1108,11 +1417,22 @@ async function sendMessage() {
   document.getElementById('sendBtn').disabled = true;
   const chat = document.getElementById('chat');
   
-  // إضافة رسالة المستخدم
-  chat.innerHTML += '<div class="user-row"><div class="user-msg">' + escapeHtml(msg) + '</div></div>';
+  // User message with copy button
+  const userMsgId = 'user-' + Date.now();
+  chat.innerHTML += '<div class="user-row" id="' + userMsgId + '"><div class="user-msg">' + escapeHtml(msg) + '</div></div>';
   input.value = '';
   
-  // إضافة مؤشر التحميل
+  // إضافة زر نسخ لرسالة المستخدم
+  setTimeout(() => {
+    const userMsg = document.getElementById(userMsgId);
+    if (userMsg) {
+      const userMsgDiv = userMsg.querySelector('.user-msg');
+      addCopyButtonToMessage(userMsgDiv, true);
+    }
+    initializeClipboard();
+  }, 100);
+  
+  // Loading
   const loadingId = 'loading-' + Date.now();
   chat.innerHTML += '<div class="message-row" id="' + loadingId + '"><div class="bot-icon"><i class="fas fa-robot"></i></div><div class="msg-content"><div class="msg-text"><div class="loading-dots"><span></span><span></span><span></span></div> جاري الكتابة...</div></div></div>';
   chat.scrollTop = chat.scrollHeight;
@@ -1126,7 +1446,8 @@ async function sendMessage() {
       },
       body: JSON.stringify({ 
         message: msg, 
-        model: currentModel 
+        model: currentModel,
+        user_id: currentUser ? currentUser.id : null
       })
     });
     
@@ -1135,26 +1456,14 @@ async function sendMessage() {
       throw new Error(err.error || 'فشل في الاتصال');
     }
     
-    // إزالة مؤشر التحميل
+    // Remove loading
     const loadEl = document.getElementById(loadingId);
     if (loadEl) loadEl.remove();
     
-    // إنشاء عنصر للرد
+    // Stream response
     const botId = 'bot-' + Date.now();
-    chat.innerHTML += `
-      <div class="message-row" id="${botId}">
-        <div class="bot-icon"><i class="fas fa-robot"></i></div>
-        <div class="msg-content">
-          <div class="msg-text" id="${botId}-text"></div>
-          <div class="msg-footer" style="display:flex; justify-content:space-between; margin-top:8px;">
-            <span style="font-size:11px; color:#888;"></span>
-            <span style="color:var(--primary); font-size:12px; font-weight:600">WormGPT (${currentModel})</span>
-          </div>
-        </div>
-      </div>
-    `;
+    chat.innerHTML += '<div class="message-row" id="' + botId + '"><div class="bot-icon"><i class="fas fa-robot"></i></div><div class="msg-content" style="position: relative;"><div class="msg-text" id="' + botId + '-text"></div><div style="display:flex;justify-content:space-between;margin-top:15px;font-size:12px;color:#888"><span></span><span style="color:var(--primary);font-weight:600"><i class="fas fa-bolt"></i> WormGPT (' + currentModel + ')</span></div></div></div>';
     
-    // معالجة الstream
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let fullText = '';
@@ -1178,7 +1487,7 @@ async function sendMessage() {
           const content = parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content;
           if (content) {
             fullText += content;
-            document.getElementById(botId + '-text').innerHTML = createMessageHTML(botId + '-text', fullText);
+            document.getElementById(botId + '-text').innerHTML = formatMessageWithCodeBlocks(fullText);
             chat.scrollTop = chat.scrollHeight;
           }
         } catch(e) {}
@@ -1186,20 +1495,27 @@ async function sendMessage() {
     }
     
     if (!fullText) {
-      document.getElementById(botId + '-text').innerHTML = '<div class="msg-text-part">لم يتم استلام رد</div>';
+      document.getElementById(botId + '-text').textContent = 'لم يتم استلام رد';
+    } else {
+      // تطبيق highlight.js على الأكواد
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+      });
+      
+      // إضافة زر نسخ للرسالة
+      const botMsg = document.getElementById(botId);
+      if (botMsg) {
+        addCopyButtonToMessage(botMsg);
+      }
+      
+      // إعادة تهيئة Clipboard للأزرار الجديدة
+      initializeClipboard();
     }
     
   } catch (err) {
     const loadEl = document.getElementById(loadingId);
     if (loadEl) loadEl.remove();
-    chat.innerHTML += `
-      <div class="message-row">
-        <div class="bot-icon"><i class="fas fa-robot"></i></div>
-        <div class="msg-content">
-          <div class="msg-text" style="color:var(--primary)">❌ ${escapeHtml(err.message)}</div>
-        </div>
-      </div>
-    `;
+    chat.innerHTML += '<div class="message-row"><div class="bot-icon"><i class="fas fa-robot"></i></div><div class="msg-content"><div class="msg-text" style="color:var(--primary)">❌ ' + escapeHtml(err.message) + '</div></div></div>';
   }
   
   isSending = false;
@@ -1207,7 +1523,7 @@ async function sendMessage() {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// ===== دوال الترخيص =====
+// ===== License =====
 function openLicenseModal() {
   const modal = document.getElementById('licenseModal');
   const activation = document.getElementById('licenseActivation');
@@ -1234,17 +1550,14 @@ function closeLicenseModal() {
 async function activateLicense() {
   const keyInput = document.getElementById('licenseKeyInput');
   const key = keyInput.value.trim();
-  if (!key) { 
-    alert('يرجى إدخال مفتاح التفعيل'); 
-    return; 
-  }
+  if (!key) { alert('يرجى إدخال مفتاح التفعيل'); return; }
   
   const btn = document.getElementById('activateBtn');
   btn.disabled = true;
   btn.textContent = 'جاري التحقق...';
   
   try {
-    // البحث عن المفتاح
+    // Find key
     const keys = await supabaseQuery('license_keys', {
       select: '*',
       filters: ['key=eq.' + key, 'is_active=eq.true']
@@ -1253,29 +1566,23 @@ async function activateLicense() {
     if (!keys || !keys.length) throw new Error('مفتاح غير صالح');
     const licenseKey = keys[0];
     
-    if (licenseKey.expires_at && new Date(licenseKey.expires_at) < new Date()) 
-      throw new Error('المفتاح منتهي الصلاحية');
-    if (licenseKey.current_uses >= licenseKey.max_uses) 
-      throw new Error('المفتاح وصل للحد الأقصى');
+    if (licenseKey.expires_at && new Date(licenseKey.expires_at) < new Date()) throw new Error('المفتاح منتهي الصلاحية');
+    if (licenseKey.current_uses >= licenseKey.max_uses) throw new Error('المفتاح وصل للحد الأقصى');
     
-    // التحقق من التفعيلات السابقة
+    // Check existing activation
     const existing = await supabaseQuery('license_activations', {
       select: 'id',
       filters: ['license_key_id=eq.' + licenseKey.id, 'user_id=eq.' + currentUser.id]
     });
-    if (existing && existing.length) 
-      throw new Error('لقد قمت بتفعيل هذا المفتاح من قبل');
+    if (existing && existing.length) throw new Error('لقد قمت بتفعيل هذا المفتاح من قبل');
     
-    // إنشاء تفعيل جديد
+    // Create activation
     await supabaseQuery('license_activations', {
       method: 'POST',
-      body: { 
-        license_key_id: licenseKey.id, 
-        user_id: currentUser.id 
-      }
+      body: { license_key_id: licenseKey.id, user_id: currentUser.id }
     });
     
-    // تحديث عدد الاستخدامات
+    // Update uses
     await fetch(SUPABASE_URL + '/rest/v1/license_keys?id=eq.' + licenseKey.id, {
       method: 'PATCH',
       headers: {
@@ -1287,7 +1594,7 @@ async function activateLicense() {
       body: JSON.stringify({ current_uses: licenseKey.current_uses + 1 })
     });
     
-    // تحديث ملف المستخدم
+    // Update profile
     await fetch(SUPABASE_URL + '/rest/v1/profiles?user_id=eq.' + currentUser.id, {
       method: 'PATCH',
       headers: {
@@ -1301,7 +1608,19 @@ async function activateLicense() {
     
     isPremium = true;
     updatePremiumUI();
-    alert('تم التفعيل بنجاح! 🎉');
+    
+    // Show success message
+    const telegramInfo = document.getElementById('telegramInfo');
+    const telegramMessage = document.getElementById('telegramMessage');
+    telegramMessage.textContent = '✅ تم التفعيل بنجاح! استمتع بالميزات المميزة 🎉';
+    telegramInfo.style.borderColor = 'var(--success)';
+    telegramInfo.style.color = 'var(--success)';
+    telegramInfo.classList.remove('hidden');
+    
+    setTimeout(() => {
+      telegramInfo.classList.add('hidden');
+    }, 5000);
+    
     closeLicenseModal();
     
   } catch (err) {
@@ -1312,10 +1631,23 @@ async function activateLicense() {
   btn.textContent = '🔑 تفعيل المفتاح';
 }
 
-// إغلاق النافذة عند النقر خارجها
+// Click outside modal to close
 document.getElementById('licenseModal').addEventListener('click', function(e) {
   if (e.target === this) closeLicenseModal();
 });
+
+// ===== Handle paste for license key =====
+document.getElementById('licenseKeyInput')?.addEventListener('paste', function(e) {
+  e.preventDefault();
+  const pastedText = e.clipboardData.getData('text');
+  this.value = pastedText.trim();
+});
+
+// ===== Initialize on load =====
+window.addEventListener('load', function() {
+  // Check if user is already logged in (optional)
+  // يمكن إضافة التحقق من التوكن المخزن هنا
+});
 </script>
 </body>
-    </html>
+</html>
